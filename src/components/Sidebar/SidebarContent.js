@@ -13,8 +13,11 @@ function Icon({ icon, ...props }) {
 function SidebarContent() {
   return (
     <div className="py-4 text-gray-500 dark:text-gray-400">
-      <a className="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200" href="#">
-        Windmill
+      <a
+        className="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200"
+        href="#"
+      >
+        Mitra Fajar Selaras
       </a>
       <ul className="mt-6">
         {routes.map((route) =>
@@ -34,21 +37,17 @@ function SidebarContent() {
                     aria-hidden="true"
                   ></span>
                 </Route>
-                <Icon className="w-5 h-5" aria-hidden="true" icon={route.icon} />
+                <Icon
+                  className="w-5 h-5"
+                  aria-hidden="true"
+                  icon={route.icon}
+                />
                 <span className="ml-4">{route.name}</span>
               </NavLink>
             </li>
-          )
+          ),
         )}
       </ul>
-      <div className="px-6 my-6">
-        <Button>
-          Create account
-          <span className="ml-2" aria-hidden="true">
-            +
-          </span>
-        </Button>
-      </div>
     </div>
   )
 }

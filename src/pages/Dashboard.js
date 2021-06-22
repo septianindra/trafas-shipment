@@ -1,156 +1,111 @@
-import React, { useState, useEffect } from 'react'
-
-import CTA from '../components/CTA'
-import InfoCard from '../components/Cards/InfoCard'
-import ChartCard from '../components/Chart/ChartCard'
-import { Doughnut, Line } from 'react-chartjs-2'
-import ChartLegend from '../components/Chart/ChartLegend'
+import React, { useEffect, useState } from 'react'
 import PageTitle from '../components/Typography/PageTitle'
-import { ChatIcon, CartIcon, MoneyIcon, PeopleIcon } from '../icons'
-import RoundIcon from '../components/RoundIcon'
-import response from '../utils/demo/tableData'
+import { Link } from 'react-router-dom'
+import { Card, CardBody, Button, Pagination } from '@windmill/react-ui'
+import { EditIcon, TrashIcon, SearchIcon } from '../icons'
+import { useDispatch, useSelector } from 'react-redux'
 import {
-  TableBody,
-  TableContainer,
-  Table,
-  TableHeader,
-  TableCell,
-  TableRow,
-  TableFooter,
-  Avatar,
-  Badge,
-  Pagination,
-} from '@windmill/react-ui'
-
-import {
-  doughnutOptions,
-  lineOptions,
-  doughnutLegends,
-  lineLegends,
-} from '../utils/demo/chartsData'
+  clearShipmentByIdStatus,
+  fetchAllShipment,
+  fetchShipment,
+} from '../app/shipmentsSlice'
+import ReactHtmlParser from 'react-html-parser'
 
 function Dashboard() {
-  const [page, setPage] = useState(1)
-  const [data, setData] = useState([])
+  const dispatch = useDispatch()
+  let response = useSelector((state) => state.shipments.allShipmentList)
+  const shipmentListStatus = useSelector(
+    (state) => state.shipments.shipmentListStatus,
+  )
+  const shipmentByIdStatus = useSelector(
+    (state) => state.shipments.shipmentByIdStatus,
+  )
 
-  // pagination setup
-  const resultsPerPage = 10
-  const totalResults = response.length
-
-  // pagination change control
-  function onPageChange(p) {
-    setPage(p)
-  }
-
-  // on page change, load new sliced data
-  // here you would make another server request for new data
   useEffect(() => {
-    setData(response.slice((page - 1) * resultsPerPage, page * resultsPerPage))
-  }, [page])
+    if (shipmentByIdStatus === 'succeeded') {
+      dispatch(clearShipmentByIdStatus())
+    }
+  }, [shipmentByIdStatus, dispatch])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(fetchAllShipment())
+    }, 1500)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    if (shipmentListStatus === 'idle') {
+      dispatch(fetchShipment())
+    }
+  }, [shipmentListStatus, dispatch])
+
+  const [pageTable, setPageTable] = useState(1)
+  const [dataTable, setDataTable] = useState([])
+  const resultsPerPage = 4
+  const totalResults = response.length
+  function onPageChangeTable(p) {
+    setPageTable(p)
+  }
+  useEffect(() => {
+    setDataTable(
+      response.slice(
+        (pageTable - 1) * resultsPerPage,
+        pageTable * resultsPerPage,
+      ),
+    )
+  }, [response, pageTable])
 
   return (
-    <>
-      <PageTitle>Dashboard</PageTitle>
+    <div className="h-screen dark:bg-gray-700 dark:text-white">
+      <header className="z-40 py-4 bg-white shadow-bottom dark:bg-gray-800">
+        <div className="container flex items-center justify-between h-full px-6 mx-auto text-dark-600 dark:text-white-300">
+          <span className="text-lg">Mitra Fajar Selaras</span>
+          <div>
+            <span className="text-sm">Shipment</span>
+            <Button size="small" className="ml-3" layout="outline">
+              Today
+            </Button>
+          </div>
+        </div>
+      </header>
+      <div class="overflow-auto  h-5/6 ">
+        <div className="grid gap-6 px-8 mt-8  md:grid-cols-2 xl:grid-cols-4">
+          {dataTable.map((data, i) => (
+            <Link to={`app/shipment/detail/${data.id}`}>
+              <Card className="border border-white shadow-md">
+                <div className=" flex justify-between pt-4 pb-2 px-3">
+                  <span className="text-sm">{data.customer_name}</span>
+                  <span className="text-sm">
+                    {new Date(data.shipment_date).toLocaleString()}
+                  </span>
+                </div>
+                <div className=" flex justify-between px-3 pb-4">
+                  <span className="text-sm ">
+                    <span className="text-sm">{data.company_name}</span>
+                  </span>
+                </div>
+                <hr />
 
-      <CTA />
-
-      {/* <!-- Cards --> */}
-      <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
-        <InfoCard title="Total clients" value="6389">
-          <RoundIcon
-            icon={PeopleIcon}
-            iconColorClass="text-orange-500 dark:text-orange-100"
-            bgColorClass="bg-orange-100 dark:bg-orange-500"
-            className="mr-4"
-          />
-        </InfoCard>
-
-        <InfoCard title="Account balance" value="$ 46,760.89">
-          <RoundIcon
-            icon={MoneyIcon}
-            iconColorClass="text-green-500 dark:text-green-100"
-            bgColorClass="bg-green-100 dark:bg-green-500"
-            className="mr-4"
-          />
-        </InfoCard>
-
-        <InfoCard title="New sales" value="376">
-          <RoundIcon
-            icon={CartIcon}
-            iconColorClass="text-blue-500 dark:text-blue-100"
-            bgColorClass="bg-blue-100 dark:bg-blue-500"
-            className="mr-4"
-          />
-        </InfoCard>
-
-        <InfoCard title="Pending contacts" value="35">
-          <RoundIcon
-            icon={ChatIcon}
-            iconColorClass="text-teal-500 dark:text-teal-100"
-            bgColorClass="bg-teal-100 dark:bg-teal-500"
-            className="mr-4"
-          />
-        </InfoCard>
+                <CardBody>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {ReactHtmlParser(data.product_list)}
+                  </p>
+                </CardBody>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
-
-      <TableContainer>
-        <Table>
-          <TableHeader>
-            <tr>
-              <TableCell>Client</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Date</TableCell>
-            </tr>
-          </TableHeader>
-          <TableBody>
-            {data.map((user, i) => (
-              <TableRow key={i}>
-                <TableCell>
-                  <div className="flex items-center text-sm">
-                    <Avatar className="hidden mr-3 md:block" src={user.avatar} alt="User image" />
-                    <div>
-                      <p className="font-semibold">{user.name}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">{user.job}</p>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">$ {user.amount}</span>
-                </TableCell>
-                <TableCell>
-                  <Badge type={user.status}>{user.status}</Badge>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{new Date(user.date).toLocaleDateString()}</span>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <TableFooter>
-          <Pagination
-            totalResults={totalResults}
-            resultsPerPage={resultsPerPage}
-            label="Table navigation"
-            onChange={onPageChange}
-          />
-        </TableFooter>
-      </TableContainer>
-
-      <PageTitle>Charts</PageTitle>
-      <div className="grid gap-6 mb-8 md:grid-cols-2">
-        <ChartCard title="Revenue">
-          <Doughnut {...doughnutOptions} />
-          <ChartLegend legends={doughnutLegends} />
-        </ChartCard>
-
-        <ChartCard title="Traffic">
-          <Line {...lineOptions} />
-          <ChartLegend legends={lineLegends} />
-        </ChartCard>
+      <div className="px-20 mt-5">
+        <Pagination
+          totalResults={totalResults}
+          resultsPerPage={resultsPerPage}
+          onChange={onPageChangeTable}
+          label="Table navigation"
+        />
       </div>
-    </>
+    </div>
   )
 }
 

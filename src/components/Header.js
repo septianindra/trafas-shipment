@@ -10,7 +10,14 @@ import {
   OutlineCogIcon,
   OutlineLogoutIcon,
 } from '../icons'
-import { Avatar, Badge, Input, Dropdown, DropdownItem, WindmillContext } from '@windmill/react-ui'
+import {
+  Avatar,
+  Badge,
+  Input,
+  Dropdown,
+  DropdownItem,
+  WindmillContext,
+} from '@windmill/react-ui'
 
 function Header() {
   const { mode, toggleMode } = useContext(WindmillContext)
@@ -41,14 +48,14 @@ function Header() {
         {/* <!-- Search input --> */}
         <div className="flex justify-center flex-1 lg:mr-32">
           <div className="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
-            <div className="absolute inset-y-0 flex items-center pl-2">
+            {/* <div className="absolute inset-y-0 flex items-center pl-2">
               <SearchIcon className="w-4 h-4" aria-hidden="true" />
             </div>
             <Input
               className="pl-8 text-gray-700"
               placeholder="Search for projects"
               aria-label="Search"
-            />
+            /> */}
           </div>
         </div>
         <ul className="flex items-center flex-shrink-0 space-x-6">
@@ -121,7 +128,10 @@ function Header() {
               onClose={() => setIsProfileMenuOpen(false)}
             >
               <DropdownItem tag="a" href="#">
-                <OutlinePersonIcon className="w-4 h-4 mr-3" aria-hidden="true" />
+                <OutlinePersonIcon
+                  className="w-4 h-4 mr-3"
+                  aria-hidden="true"
+                />
                 <span>Profile</span>
               </DropdownItem>
               <DropdownItem tag="a" href="#">
@@ -129,7 +139,10 @@ function Header() {
                 <span>Settings</span>
               </DropdownItem>
               <DropdownItem onClick={() => alert('Log out!')}>
-                <OutlineLogoutIcon className="w-4 h-4 mr-3" aria-hidden="true" />
+                <OutlineLogoutIcon
+                  className="w-4 h-4 mr-3"
+                  aria-hidden="true"
+                />
                 <span>Log out</span>
               </DropdownItem>
             </Dropdown>
