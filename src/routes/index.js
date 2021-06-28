@@ -2,16 +2,16 @@ import { lazy } from 'react'
 
 const Dashboard = lazy(() => import('../pages/Dashboard'))
 const Shipment = lazy(() => import('../pages/Shipment'))
+const DetailShipment = lazy(() => import('../pages/DetailShipment'))
 const CreateShipment = lazy(() => import('../pages/CreateShipment'))
 const EditShipment = lazy(() => import('../pages/EditShipment'))
 const TrackTrace = lazy(() => import('../pages/TraceTrack'))
-const DetailShipment = lazy(() => import('../pages/DetailShipment'))
 const Employee = lazy(() => import('../pages/Employee'))
 const CreateEmployee = lazy(() => import('../pages/CreateEmployee'))
 const EditEmployee = lazy(() => import('../pages/EditEmployee'))
-const Courier = lazy(() => import('../pages/Courier'))
-const CreateCourier = lazy(() => import('../pages/CreateCourier'))
-const EditCourier = lazy(() => import('../pages/EditCourier'))
+const Schedule = lazy(() => import('../pages/Schedule'))
+const CreateSchedule = lazy(() => import('../pages/CreateSchedule'))
+const EditSchedule = lazy(() => import('../pages/EditSchedule'))
 
 const routes = [
   {
@@ -51,16 +51,16 @@ const routes = [
     component: EditEmployee,
   },
   {
-    path: '/courier',
-    component: Courier,
+    path: '/schedule',
+    component: Schedule,
   },
   {
-    path: '/courier/new',
-    component: Employee,
+    path: '/schedule/new',
+    component: CreateSchedule,
   },
   {
-    path: '/courier/edit/:id',
-    component: Employee,
+    path: '/schedule/edit/:id',
+    component: EditSchedule,
   },
 ]
 

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import PageTitle from '../components/Typography/PageTitle'
 import { Link } from 'react-router-dom'
-import { Card, CardBody, Button, Pagination } from '@windmill/react-ui'
-import { EditIcon, TrashIcon, SearchIcon } from '../icons'
+import { Card, CardBody, Pagination, Input } from '@windmill/react-ui'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   clearShipmentByIdStatus,
@@ -10,9 +8,13 @@ import {
   fetchShipment,
 } from '../app/shipmentsSlice'
 import ReactHtmlParser from 'react-html-parser'
+import InfoCard from '../components/Cards/InfoCard'
+import RoundIcon from '../components/RoundIcon'
+import { PeopleIcon, MoneyIcon, SearchIcon } from '../icons'
 
 function Dashboard() {
   const dispatch = useDispatch()
+  const [query, setQuery] = useState('')
   let response = useSelector((state) => state.shipments.allShipmentList)
   const shipmentListStatus = useSelector(
     (state) => state.shipments.shipmentListStatus,
@@ -59,18 +61,55 @@ function Dashboard() {
   return (
     <div className="h-screen dark:bg-gray-700 dark:text-white">
       <header className="z-40 py-4 bg-white shadow-bottom dark:bg-gray-800">
-        <div className="container flex items-center justify-between h-full px-6 mx-auto text-dark-600 dark:text-white-300">
-          <span className="text-lg">Mitra Fajar Selaras</span>
-          <div>
+        <div className="container flex items-center justify-between px-6 mx-auto text-dark-600 dark:text-white-300">
+          <span className="text-lg mr-5">TRAFAS</span>
+          <div className="relative w-3/5 focus-within:text-purple-500">
+            <div className="absolute inset-y-0 flex items-center pl-2">
+              <SearchIcon className="w-4 h-4" aria-hidden="true" />
+            </div>
+            <Input
+              className="pl-8 rounded-md text-gray-700"
+              placeholder="Search. . ."
+              aria-label="Search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </div>
+          <div className="ml-5">
             <span className="text-sm">Shipment</span>
-            <Button size="small" className="ml-3" layout="outline">
-              Today
-            </Button>
           </div>
         </div>
       </header>
-      <div class="overflow-auto  h-5/6 ">
-        <div className="grid gap-6 px-8 mt-8  md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid px-8 py-4 gap-6 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4">
+        <div className="cursor-pointer" onClick={() => console.log('clicked')}>
+          <InfoCard title="Today Shipment" value="6389">
+            <RoundIcon
+              icon={PeopleIcon}
+              iconColorClass="text-orange-500 dark:text-orange-100"
+              bgColorClass="bg-orange-100 dark:bg-orange-500"
+              className="mr-4"
+            />
+          </InfoCard>
+        </div>
+
+        <div className="cursor-pointer" onClick={() => console.log('clicked')}>
+          <InfoCard title="Active Shipment" value="$ 46,760.89">
+            <RoundIcon
+              icon={MoneyIcon}
+              iconColorClass="text-green-500 dark:text-green-100"
+              bgColorClass="bg-green-100 dark:bg-green-500"
+              className="mr-4"
+            />
+          </InfoCard>
+        </div>
+      </div>
+
+      <div className="px-8 mb-4">
+        <span className="text-lg">Shipment list</span>
+      </div>
+
+      <div className="overflow-auto h-2/3">
+        <div className="grid gap-3 px-8 md:grid-cols-2 xl:grid-cols-4">
           {dataTable.map((data, i) => (
             <Link to={`app/shipment/detail/${data.id}`}>
               <Card className="border border-white shadow-md">
@@ -86,7 +125,6 @@ function Dashboard() {
                   </span>
                 </div>
                 <hr />
-
                 <CardBody>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {ReactHtmlParser(data.product_list)}
@@ -97,7 +135,8 @@ function Dashboard() {
           ))}
         </div>
       </div>
-      <div className="px-20 mt-5">
+
+      <div className="fixed w-full px-20 bottom-2 ">
         <Pagination
           totalResults={totalResults}
           resultsPerPage={resultsPerPage}

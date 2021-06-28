@@ -24,55 +24,45 @@ import {
 import SectionTitle from '../components/Typography/SectionTitle'
 import { fetchShipmentById } from '../app/shipmentsSlice'
 import './pages.css'
+import { fetchShipmentStatusAuditById } from '../app/shipmentStatusAuditsSlice'
 
 function TraceTrack() {
   const dispatch = useDispatch()
   let { id } = useParams()
-  const response = useSelector(
-    (state) => state.detailShipments.detail_shipmentById,
+  const shipmentStatusAuditById = useSelector(
+    (state) => state.shipmentStatusAudits.shipmentStatusAuditById,
   )
-  const detail_shipmentByIdStatus = useSelector(
-    (state) => state.detailShipments.detail_shipmentByIdStatus,
-  )
-  const shipmentById = useSelector((state) => state.shipments.shipmentById)
-  const shipmentByIdStatus = useSelector(
-    (state) => state.shipments.shipmentByIdStatus,
+  const shipmentStatusAuditByIdStatus = useSelector(
+    (state) => state.shipmentStatusAudits.shipmentStatusAuditByIdStatus,
   )
 
-  useEffect(() => {
-    if (shipmentByIdStatus === 'idle') {
-      dispatch(fetchShipmentById(id))
-    }
-  }, [shipmentByIdStatus, dispatch])
+  const status = ['collected', 'delivering', 'delivered', 'pickup', 'done']
 
   useEffect(() => {
-    if (detail_shipmentByIdStatus === 'idle') {
+    if (shipmentStatusAuditByIdStatus === 'idle') {
+      dispatch(fetchShipmentStatusAuditById(id))
     }
-  }, [detail_shipmentByIdStatus, dispatch])
+  }, [shipmentStatusAuditByIdStatus, dispatch])
 
   const [pageTable, setPageTable] = useState(1)
 
   const [dataTable, setDataTable] = useState([])
 
   const resultsPerPage = 7
-  const totalResults = response.length
+  const totalResults = shipmentStatusAuditById.length
 
   function onPageChangeTable(p) {
     setPageTable(p)
   }
 
-  function removeOrganization(id) {
-    dispatch(deleteShipment(id))
-  }
-
   useEffect(() => {
     setDataTable(
-      response.slice(
+      shipmentStatusAuditById.slice(
         (pageTable - 1) * resultsPerPage,
         pageTable * resultsPerPage,
       ),
     )
-  }, [response, pageTable])
+  }, [shipmentStatusAuditById, pageTable])
   return (
     <>
       <PageTitle>
@@ -80,20 +70,31 @@ function TraceTrack() {
           <div>Track & Trace</div>
         </div>
       </PageTitle>
-      <SectionTitle>ID #{shipmentById.id}</SectionTitle>
+      <SectionTitle>
+        ID #
+        {shipmentStatusAuditById[0]
+          ? shipmentStatusAuditById[0].shipment_id
+          : ''}
+      </SectionTitle>
       <hr className="mb-4" />
 
       <Card className="my-5 text-gray-300">
         <CardBody>
           <div className="track">
-            {dataTable.map((data) => (
-              <div className={`step ${data.logic}`}>
+            {status.map((data) => (
+              <div
+                className={
+                  shipmentStatusAuditById.some((e) => e.status === data)
+                    ? 'step active'
+                    : 'step'
+                }
+              >
                 <span className="icon">
                   <i>
                     <HeartIcon />
                   </i>
                 </span>
-                <span className="text">{data.status}</span>
+                <span className="text">{data}</span>
               </div>
             ))}
           </div>
@@ -105,8 +106,7 @@ function TraceTrack() {
           <TableHeader>
             <tr>
               <TableCell>Local time</TableCell>
-              <TableCell>Location</TableCell>
-              <TableCell>Action</TableCell>
+
               <TableCell>Status</TableCell>
               <TableCell>Description</TableCell>
             </tr>
@@ -115,20 +115,8 @@ function TraceTrack() {
             {dataTable.map((data, i) => (
               <TableRow key={i}>
                 <TableCell>
-                  <div className="flex items-center text-sm">
-                    <div>
-                      {data.created_at != data.updated_at
-                        ? data.updated_at
-                        : ''}
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{data.address}</span>
-                </TableCell>
-                <TableCell className=" w-1/4">
-                  <span className="text-sm truncate ">
-                    {data.shipment_date}
+                  <span className="text-sm">
+                    {new Date(data.changed_on).toLocaleString()}
                   </span>
                 </TableCell>
                 <TableCell>

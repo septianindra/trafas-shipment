@@ -10,9 +10,9 @@ const routes = [
     name: 'Shipment',
   },
   {
-    path: '/app/courier',
+    path: '/app/schedule',
     icon: 'GithubIcon',
-    name: 'Courier Manager',
+    name: 'Courier Schedule',
   },
   {
     path: '/app/employee',

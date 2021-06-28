@@ -15,42 +15,36 @@ import {
 } from '@windmill/react-ui'
 import { EditIcon, TrashIcon, SearchIcon } from '../icons'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  clearShipmentByIdStatus,
-  deleteShipment,
-  fetchShipment,
-} from '../app/shipmentsSlice'
 import Fuse from 'fuse.js'
 import {
-  clearEmployeeByIdStatus,
-  deleteEmployee,
-  fetchEmployee,
-} from '../app/employeesSlice'
+  deleteSchedule,
+  fetchSchedule,
+} from '../app/schedulesSlice'
 
-function Courier() {
+function Schedule() {
   const dispatch = useDispatch()
   const [query, setQuery] = useState('')
-  const response = useSelector((state) => state.employees.employeeList)
+  const response = useSelector((state) => state.schedules.scheduleList)
   const fuse = new Fuse(response, { keys: ['name', 'role'] })
   const results = fuse.search(query)
-  const employeeListStatus = useSelector(
-    (state) => state.employees.employeeListStatus,
+  const scheduleListStatus = useSelector(
+    (state) => state.schedules.scheduleListStatus, 
   )
-  const employeeByIdStatus = useSelector(
-    (state) => state.employees.employeeByIdStatus,
+  const scheduleByIdStatus = useSelector(
+    (state) => state.schedules.scheduleByIdStatus,
   )
 
-  useEffect(() => {
-    if (employeeByIdStatus === 'succeeded') {
-      dispatch(clearEmployeeByIdStatus())
-    }
-  }, [employeeByIdStatus, dispatch])
+  // useEffect(() => {
+  //   if (scheduleByIdStatus === 'succeeded') {
+  //     dispatch(clearSche())
+  //   }
+  // }, [scheduleByIdStatus, dispatch])
 
   useEffect(() => {
-    if (employeeListStatus === 'idle') {
-      dispatch(fetchEmployee())
+    if (scheduleListStatus === 'idle') {
+      dispatch(fetchSchedule())
     }
-  }, [employeeListStatus, dispatch])
+  }, [scheduleListStatus, dispatch])
 
   const [pageTable, setPageTable] = useState(1)
 
@@ -64,7 +58,7 @@ function Courier() {
   }
 
   function removeOrganization(id) {
-    dispatch(deleteEmployee(id))
+    dispatch(deleteSchedule(id))
   }
 
   let searchResult = []
@@ -96,7 +90,7 @@ function Courier() {
         <div className="flex justify-between">
           <div>Courier schedule list</div>
           <div className="float-right">
-            <Button size="small" tag={Link} to="/app/employee/new">
+            <Button size="small" tag={Link} to="/app/schedule/new">
               + new schedule
             </Button>
           </div>
@@ -184,4 +178,4 @@ function Courier() {
   )
 }
 
-export default Courier
+export default Schedule

@@ -40,6 +40,8 @@ import { fetchShipmentStatusAuditById } from '../app/shipmentStatusAuditsSlice'
 
 function DetailShipment(url) {
   let { id } = useParams()
+  const [status, setStatus] = useState('')
+  const [query, setQuery] = useState('confirmed')
   const dispatch = useDispatch()
   const shipmentById = useSelector((state) => state.shipments.shipmentById)
   const shipmentByIdStatus = useSelector(
@@ -50,9 +52,6 @@ function DetailShipment(url) {
   )
   const shipmentStatusAuditById = useSelector(
     (state) => state.shipmentStatusAudits.shipmentStatusAuditById,
-  )
-  const shipmentStatusAuditByIdStatus = useSelector(
-    (status) => status.shipmentStatusAudits.shipmentStatusAuditByIdStatus,
   )
 
   const statusChecked = [
@@ -72,22 +71,37 @@ function DetailShipment(url) {
     formState: { errors },
     formState: { isSubmitSuccessful },
   } = useForm({
-    defaultValues: {},
+    defaultValues: {
+      recipient: shipmentById.recipient,
+      phone: shipmentById.phone,
+    },
   })
+
+  useEffect(() => {
+    switch (shipmentById.status) {
+      case 'confirmed':
+        setStatus('collected')
+        break
+      case 'collected':
+        setStatus('delivering')
+        break
+      case 'delivering':
+        setStatus('delivered')
+        break
+      case 'delivered':
+        setStatus('pickup')
+        break
+      case 'pickup':
+        setStatus('done')
+        break
+    }
+  }, [shipmentById])
 
   useEffect(() => {
     if (shipmentByIdStatus === 'idle') {
       dispatch(fetchShipmentById(id))
-      dispatch(fetchShipmentStatusAuditById(id))
     }
   }, [shipmentByIdStatus, dispatch])
-
-  // useEffect(() => {
-  //   if (shipmentStatusAuditByIdStatus === 'idle') {
-  //     dispatch(fetchShipmentById(id))
-  //     dispatch(fetchShipmentStatusAuditById(id))
-  //   }
-  // }, [shipmentStatusAuditByIdStatus, dispatch])
 
   useEffect(() => {}, [])
   const canSave = shipmentUpdateStatus === 'idle'
@@ -105,6 +119,9 @@ function DetailShipment(url) {
       } finally {
         dispatch(clearShipmentByIdStatus())
         dispatch(clearShipmentUpdateStatus())
+        reset({
+          status: '',
+        })
       }
   }
   console.log(shipmentStatusAuditById)
@@ -158,21 +175,39 @@ function DetailShipment(url) {
               <Label>
                 <span>Update Status</span>
                 <Input
+                  readOnly
                   className="mt-1"
-                  value={
-                    shipmentById.status === 'confirmed'
-                      ? 'collected'
-                      : shipmentById.status === 'collected'
-                      ? 'delivering'
-                      : shipmentById.status === 'delivering'
-                      ? 'delivered'
-                      : shipmentById.status === 'delivered'
-                      ? 'pickup'
-                      : 'done'
-                  }
+                  value={status}
                   {...register('status', { required: true })}
                 />
               </Label>
+              {shipmentById.status === 'delivering' ? (
+                <>
+                  <Label>
+                    <span>Recipient</span>
+                    <Input className="mt-1" {...register('recipient')} />
+                  </Label>
+                  <Label>
+                    <span>Phone</span>
+                    <Input className="mt-1" {...register('phone')} />
+                  </Label>
+                </>
+              ) : (
+                <>
+                  <Label>
+                    <span>Recipient</span>
+                    <Input
+                      disabled
+                      className="mt-1"
+                      {...register('recipient')}
+                    />
+                  </Label>
+                  <Label>
+                    <span>Phone</span>
+                    <Input disabled className="mt-1" {...register('phone')} />
+                  </Label>
+                </>
+              )}
               <div className="my-5 float-right">
                 {shipmentUpdateStatus === 'loading' ? (
                   <>

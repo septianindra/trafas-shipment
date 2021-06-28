@@ -21,16 +21,13 @@ import {
   fetchShipment,
 } from '../app/shipmentsSlice'
 import Fuse from 'fuse.js'
-import toast, { Toaster, useToaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
+import { clearShipmentStatusAuditByIdStatus } from '../app/shipmentStatusAuditsSlice'
 
 function Shipment() {
   const dispatch = useDispatch()
-  const [query, setQuery] = useState('')
+
   const response = useSelector((state) => state.shipments.shipmentList)
-  const fuse = new Fuse(response, {
-    keys: ['transfer_no', 'customer_name', 'status'],
-  })
-  const results = fuse.search(query)
   const shipmentListStatus = useSelector(
     (state) => state.shipments.shipmentListStatus,
   )
@@ -40,6 +37,15 @@ function Shipment() {
   const shipmentDeleteStatus = useSelector(
     (state) => state.shipments.shipmentDeleteStatus,
   )
+  const shipmentStatusAuditByIdStatus = useSelector(
+    (state) => state.shipmentStatusAudits.shipmentStatusAuditByIdStatus,
+  )
+
+  const [query, setQuery] = useState('')
+  const fuse = new Fuse(response, {
+    keys: ['transfer_no', 'customer_name', 'status'],
+  })
+  const results = fuse.search(query)
 
   useEffect(() => {
     if (shipmentByIdStatus === 'succeeded') {
@@ -48,13 +54,18 @@ function Shipment() {
   }, [shipmentByIdStatus, dispatch])
 
   useEffect(() => {
+    if (shipmentStatusAuditByIdStatus === 'succeeded') {
+      dispatch(clearShipmentStatusAuditByIdStatus())
+    }
+  }, [shipmentStatusAuditByIdStatus, dispatch])
+
+  useEffect(() => {
     if (shipmentListStatus === 'idle') {
       dispatch(fetchShipment())
     }
   }, [shipmentListStatus, dispatch])
 
   const [pageTable, setPageTable] = useState(1)
-
   const [dataTable, setDataTable] = useState([])
 
   const resultsPerPage = 7

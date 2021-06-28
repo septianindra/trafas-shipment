@@ -82,6 +82,8 @@ export const updateShipment = createAsyncThunk(
         // shipment_date: updatedData.shipment_date,
         // pickup_date: updatedData.pickup_date,
         status: updatedData.status,
+        recipient: updatedData.recipient,
+        phone: updatedData.phone,
         // product_list: updatedData.product_list,
       })
       .eq('id', updatedData.id)
