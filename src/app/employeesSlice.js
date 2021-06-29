@@ -41,6 +41,11 @@ export const createNewEmployee = createAsyncThunk(
   'employees/createNewEmployee',
   async (data) => {
     const response = await supabase.from('employees').insert([data])
+    const { user, session, error } = await supabase.auth.signUp({
+      email: data.name,
+      password: 'password',
+    })
+    console.log(user)
     return response
   },
 )
@@ -64,6 +69,39 @@ export const updateEmployee = createAsyncThunk(
       })
       .eq('id', updatedData.id)
     return data
+  },
+)
+
+export const signUp = createAsyncThunk(
+  'employees/signUp',
+  async (data) => {
+    const { user, session, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+    })
+    if(error){alert(error.message)}
+    return [user,session]
+  },
+)
+
+export const signIn = createAsyncThunk(
+  'employees/signIn',
+  async (data) => {
+    const { user, session, error } = await supabase.auth.signIn({
+      email: data.email,
+      password: data.password,
+    })
+    if(error){alert(error.message)}
+    return [user,session]
+  },
+)
+
+export const signOut = createAsyncThunk(
+  'employees/signOut',
+  async (data) => {
+    const { error } = await supabase.auth.signOut()
+    if(error){alert(error.message)}
+    return null
   },
 )
 

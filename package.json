@@ -1,7 +1,7 @@
 {
-  "name": "windmill-dashboard-react",
-  "version": "0.4.0",
-  "description": "A multi theme, completely accessible, with components and pages examples, (almost) ready for production dashboard.",
+  "name": "shipment-trafas",
+  "version": "0.1.0",
+  "description": "first dev of shipment app.",
   "private": true,
   "scripts": {
     "tailwind:dev": "tailwindcss build src/assets/css/tailwind.css -o src/assets/css/tailwind.output.css",
@@ -23,11 +23,13 @@
     "@testing-library/user-event": "7.2.1",
     "@tinymce/tinymce-react": "^3.12.6",
     "@windmill/react-ui": "0.3.1",
+    "browserslist": "^4.16.6",
     "chart.js": "^2.9.4",
     "classnames": "2.2.6",
     "faker": "4.1.0",
     "fuse.js": "^6.4.6",
     "html-to-text": "^7.1.1",
+    "normalize-url": "^6.1.0",
     "react": "^16.13.1",
     "react-chartjs-2": "2.9.0",
     "react-datepicker": "^4.1.1",
@@ -57,15 +59,9 @@
     "postcss-cli": "^8.3.1",
     "react-axe": "3.5.2",
     "release-it": "^14.8.0",
-    "tailwindcss": "^2.1.4"
+    "tailwindcss": "^2.2.4"
   },
-  "keywords": [
-    "windmill",
-    "dashboard",
-    "admin",
-    "tailwind",
-    "react"
-  ],
+  "keywords": [],
   "release-it": {
     "github": {
       "release": true
@@ -75,7 +71,7 @@
     },
     "plugins": {
       "@release-it/conventional-changelog": {
-        "preset": "angular",
+        "preset": "react",
         "infile": "CHANGELOG.md"
       }
     }
