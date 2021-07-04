@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PageTitle from '../components/Typography/PageTitle'
 import { Input, HelperText, Label, Button, Select } from '@windmill/react-ui'
 import { Link } from 'react-router-dom'
@@ -12,17 +12,42 @@ import {
   clearShipmentList,
   clearShipmentListStatus,
   createNewShipment,
+  fetchShipment,
 } from '../app/shipmentsSlice'
 import { Editor } from '@tinymce/tinymce-react'
-
+import { romanize } from 'react-roman'
 function CreateShipment() {
   const dispatch = useDispatch()
   const [product_list, setProduct_list] = useState('')
 
+  const shipmentList = useSelector((state) => state.shipments.shipmentList)
+  const shipmentListStatus = useSelector(
+    (state) => state.shipments.shipmentListStatus,
+  )
   const createShipmentStatus = useSelector(
     (state) => state.shipments.createShipmentStatus,
   )
   const canSave = createShipmentStatus === 'idle'
+
+  useEffect(() => {
+    if (shipmentListStatus === 'idle') {
+      dispatch(fetchShipment())
+    }
+  }, [shipmentListStatus, dispatch])
+
+  Number.prototype.pad = function (size) {
+    var s = String(this)
+    while (s.length < (size || 2)) {
+      s = '0' + s
+    }
+    return s
+  }
+
+  const date = new Date()
+  const month = date.getMonth()
+  const year = date.getFullYear()
+  const setnumber =
+    shipmentList.length.pad(4) + '/DO-MFS/' + romanize(month) + '/' + year
 
   const {
     register,
@@ -33,7 +58,7 @@ function CreateShipment() {
     formState: { isSubmitSuccessful },
   } = useForm({
     defaultValues: {
-      transfer_no: '',
+      transfer_no: setnumber,
       customer_name: '',
       shipment_address: '',
       shipment_date: '',
@@ -56,6 +81,7 @@ function CreateShipment() {
         if (error) throw toast.error('Gagal menambahkan data!')
       } finally {
         dispatch(clearCreateShipmentStatus())
+        dispatch(clearShipmentListStatus())
       }
   }
 
@@ -110,8 +136,9 @@ function CreateShipment() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-6 mt-4 mb-4 md:grid-cols-2 xl:grid-cols-2">
             <Label>
-              <span>Transfer no.:</span>
+              <span>Set no.:</span>
               <Input
+                value={setnumber}
                 className="mt-1"
                 {...register('transfer_no', { required: true })}
               />

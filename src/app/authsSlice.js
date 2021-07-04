@@ -1,37 +1,32 @@
 import { createAsyncThunk, createSlice, current } from '@reduxjs/toolkit'
-import { createClient } from '@supabase/supabase-js'
-const { REACT_APP_SUPABASE_KEY, REACT_APP_SUPABASE_URL } = process.env
-const supabase = createClient(REACT_APP_SUPABASE_URL, REACT_APP_SUPABASE_KEY)
+import { supabase } from '../supabase'
 
 const initialState = {
   isAuthenticated: false,
   isAuthenticatedStatus: 'idle',
   isAuthenticatedError: null,
-  user:[],
-  session:[],
+  user: [],
+  session: [],
 }
 
+export const signIn = createAsyncThunk('auths/signIn', async (data) => {
+  const { user, session, error } = await supabase.auth.signIn({
+    email: data.email,
+    password: data.password,
+  })
+  if (error) {
+    alert(error.message)
+  }
+  return [user, session]
+})
 
-export const signIn = createAsyncThunk(
-  'auths/signIn',
-  async (data) => {
-    const { user, session, error } = await supabase.auth.signIn({
-      email: data.email,
-      password: data.password,
-    })
-    if(error){alert(error.message)}
-    return [user,session]
-  },
-)
-
-export const signOut = createAsyncThunk(
-  'auths/signOut',
-  async (data) => {
-    const { error } = await supabase.auth.signOut()
-    if(error){alert(error.message)}
-    return null
-  },
-)
+export const signOut = createAsyncThunk('auths/signOut', async (data) => {
+  const { error } = await supabase.auth.signOut()
+  if (error) {
+    alert(error.message)
+  }
+  return null
+})
 
 const authsSlice = createSlice({
   name: 'auths',
@@ -58,8 +53,6 @@ const authsSlice = createSlice({
   },
 })
 
-export const {
-  clearIsAuthenticatedStatus
-} = authsSlice.actions
+export const { clearIsAuthenticatedStatus } = authsSlice.actions
 
 export default authsSlice.reducer

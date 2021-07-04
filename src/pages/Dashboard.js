@@ -15,7 +15,16 @@ import { PeopleIcon, MoneyIcon, SearchIcon } from '../icons'
 function Dashboard() {
   const dispatch = useDispatch()
   const [query, setQuery] = useState('')
-  let response = useSelector((state) => state.shipments.allShipmentList)
+  const response = useSelector((state) => state.shipments.allShipmentList)
+
+  // const response = useSelector(
+  //   (state) => state.shipments.allShipmentList,
+  // ).filter(
+  //   (data) =>
+  //     new Date(String(data.shipment_date)).toDateString() ===
+  //     new Date().toDateString(),
+  // )
+
   const shipmentListStatus = useSelector(
     (state) => state.shipments.shipmentListStatus,
   )
@@ -81,6 +90,7 @@ function Dashboard() {
         </div>
       </header>
       <div className="grid px-8 py-4 gap-6 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4">
+        <div></div>
         <div className="cursor-pointer" onClick={() => console.log('clicked')}>
           <InfoCard title="Today Shipment" value="6389">
             <RoundIcon
@@ -102,6 +112,7 @@ function Dashboard() {
             />
           </InfoCard>
         </div>
+        <div></div>
       </div>
 
       <div className="px-8 mb-4">

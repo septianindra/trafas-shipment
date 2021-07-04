@@ -7,13 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import toast, { Toaster, useToaster } from 'react-hot-toast'
 import { FulfillingBouncingCircleSpinner } from 'react-epic-spinners'
-import {
-  clearCreateShipmentStatus,
-  clearShipmentList,
-  clearShipmentListStatus,
-  createNewShipment,
-} from '../app/shipmentsSlice'
-import { Editor } from '@tinymce/tinymce-react'
+
 import {
   clearCreateEmployeeStatus,
   createNewEmployee,
@@ -36,6 +30,9 @@ function CreateEmployee() {
   } = useForm({
     defaultValues: {
       name: '',
+      phone: '',
+      email: '',
+      password: 'password',
       role: '',
     },
   })
@@ -59,6 +56,9 @@ function CreateEmployee() {
     if (isSubmitSuccessful) {
       reset({
         name: '',
+        phone: '',
+        email: '',
+        password: 'password',
         role: '',
       })
     }
@@ -101,10 +101,31 @@ function CreateEmployee() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-6 mt-4 mb-4 md:grid-cols-2 xl:grid-cols-2">
             <Label>
-              <span>Name :</span>
+              <span>Name</span>
               <Input
                 className="mt-1"
                 {...register('name', { required: true })}
+              />
+            </Label>
+            <Label>
+              <span>Email</span>
+              <Input
+                className="mt-1"
+                {...register('email', { required: true })}
+              />
+            </Label>
+            <Label>
+              <span>Password</span>
+              <Input
+                className="mt-1"
+                {...register('password', { required: true })}
+              />
+            </Label>
+            <Label>
+              <span>Phone</span>
+              <Input
+                className="mt-1"
+                {...register('phone', { required: true })}
               />
             </Label>
             <Label>

@@ -21,20 +21,18 @@ function App() {
       <Router>
         <AccessibleNavigationAnnouncer />
         <AuthProvider>
-        <Switch>
-          <Route path="/login" component={Login} />
-          <Route path="/create-account" component={CreateAccount} />
-          <Route path="/forgot-password" component={ForgotPassword} />
-          {/* <PrivateRoute>
-          <Route path="/dashboard" component={Dashboard} />
-          </PrivateRoute> */}
-          {/* Place new routes over this */}
-          <PrivateRoute path="/app" component={Layout} />
-            
-    
-          {/* If you have an index page, you can remothis Redirect */}
-          <Redirect exact from="/" to="/login" />
-        </Switch>
+          <Switch>
+            <Route path="/login" component={Login} />
+            <Route path="/create-account" component={CreateAccount} />
+            <Route path="/forgot-password" component={ForgotPassword} />
+            <Route path="/dashboard" component={Dashboard} />
+
+            {/* Place new routes over this */}
+            <PrivateRoute path="/app" component={Layout} />
+
+            {/* If you have an index page, you can remothis Redirect */}
+            <Redirect exact from="/" to="/login" />
+          </Switch>
         </AuthProvider>
       </Router>
     </>

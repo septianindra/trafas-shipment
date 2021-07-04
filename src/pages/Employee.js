@@ -122,6 +122,9 @@ function Employee() {
           <TableHeader>
             <tr>
               <TableCell>Name</TableCell>
+              <TableCell>Phone</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Password</TableCell>
               <TableCell>Role</TableCell>
               <TableCell className="text-center">Action</TableCell>
             </tr>
@@ -133,20 +136,20 @@ function Employee() {
                   <span className="text-sm">{data.name}</span>
                 </TableCell>
                 <TableCell>
+                  <span className="text-sm">{data.phone}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">{data.email}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">{data.password}</span>
+                </TableCell>
+                <TableCell>
                   <span className="text-sm">{data.role}</span>
                 </TableCell>
                 <TableCell>
                   <div className="flex   justify-center ">
                     <div className=" space-x-4">
-                      <Button
-                        tag={Link}
-                        to={`/app/shipment/track-trace/${data.id}`}
-                        layout="link"
-                        size="icon"
-                        aria-label="Search"
-                      >
-                        <SearchIcon className="w-5 h-5" aria-hidden="true" />
-                      </Button>
                       <Button
                         tag={Link}
                         to={`/app/employee/edit/${data.id}`}

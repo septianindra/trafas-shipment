@@ -11,6 +11,7 @@ import { Editor } from '@tinymce/tinymce-react'
 import {
   clearCreateScheduleStatus,
   createNewSchedule,
+  fetchScheduleById,
 } from '../app/schedulesSlice'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -33,6 +34,11 @@ function CreateSchedule() {
   const shipmentList = useSelector((state) => state.shipments.shipmentList)
   const shipmentListStatus = useSelector(
     (state) => state.shipments.shipmentListStatus,
+  )
+
+  const scheduleById = useSelector((state) => state.schedules.scheduleById)
+  const scheduleByIdStatus = useSelector(
+    (state) => state.schedules.scheduleByIdStatus,
   )
 
   useEffect(() => {
@@ -68,37 +74,47 @@ function CreateSchedule() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState,
     formState: { errors },
     formState: { isSubmitSuccessful },
   } = useForm({
     defaultValues: {
-      name: '',
-      role: '',
+      shipment_id: '',
+      employee_id: '',
     },
   })
+  const employeeId = watch(['employee_id'])
 
   const onSubmit = async (data) => {
+    data.delivery_start_date = startDateDelivery
+    data.delivery_end_date = endDateDelivery
+    data.delivery_start_time = startTimeDelivery
+    data.delivery_end_time = endTimeDelivery
+    data.pickup_start_date = startDatePickup
+    data.pickup_end_date = endDatePickup
+    data.pickup_start_time = startTimePickup
+    data.pickup_end_time = endTimePickup
     console.log(data)
-    // if (canSave)
-    //   try {
-    //     const resultAction = await dispatch(createNewSchedule(data))
-    //     unwrapResult(resultAction)
-    //     if (resultAction.payload.error === null) {
-    //       toast.success('Berhasil menambahkan data!')
-    //     }
-    //   } catch (error) {
-    //     if (error) throw toast.error('Gagal menambahkan data!')
-    //   } finally {
-    //     dispatch(clearCreateScheduleStatus())
-    //   }
+    if (canSave)
+      try {
+        const resultAction = await dispatch(createNewSchedule(data))
+        unwrapResult(resultAction)
+        if (resultAction.payload.error === null) {
+          toast.success('Berhasil menambahkan data!')
+        }
+      } catch (error) {
+        if (error) throw toast.error('Gagal menambahkan data!')
+      } finally {
+        dispatch(clearCreateScheduleStatus())
+      }
   }
 
   React.useEffect(() => {
     if (isSubmitSuccessful) {
       reset({
-        name: '',
-        role: '',
+        shipment_id: '',
+        employee_id: '',
       })
     }
   }, [formState, reset])
@@ -135,23 +151,40 @@ function CreateSchedule() {
         }}
       />
       <PageTitle>Jadwal Pengiriman Baru</PageTitle>
+      <h1 className="text-white">{employeeId}</h1>
 
       <div className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-6 mt-4 mb-4 sm:grid-cols-2 xl:grid-cols-2">
             <Label>
               <span>Shipment ID :</span>
-              <Select className="mt-1">
-                {shipmentList.map((data) => (
-                  <option value={data.id}>{data.customer_name}</option>
+              <Select
+                className="mt-1"
+                {...register('shipment_id', { required: true })}
+              >
+                <option disabled selected>
+                  choose shipment
+                </option>
+                {shipmentList.map((data, index) => (
+                  <option key={index} value={data.id}>
+                    {data.customer_name}
+                  </option>
                 ))}
               </Select>
             </Label>
             <Label>
               <span>Nama Kurir</span>
-              <Select className="mt-1">
-                {employeeList.map((data) => (
-                  <option value={data.id}>{data.name}</option>
+              <Select
+                className="mt-1"
+                {...register('employee_id', { required: true })}
+              >
+                <option disabled selected>
+                  choose courier
+                </option>
+                {employeeList.map((data, index) => (
+                  <option key={index} value={data.id}>
+                    {data.name}
+                  </option>
                 ))}
               </Select>
             </Label>
@@ -196,7 +229,7 @@ function CreateSchedule() {
                 dateFormat="h:mm aa"
               />
             </div>
-            <div className="sm:mt-4 lg:mt-0">
+            {/* <div className="sm:mt-4 lg:mt-0">
               <span className="block text-sm text-gray-400 tracking-wide mb-2">
                 Tanggal ambil barang
               </span>
@@ -215,8 +248,8 @@ function CreateSchedule() {
               </span>
               <DatePicker
                 className="appearance-none block w-full bg-gray-700 text-sm text-gray-400 border border-gray-700 rounded p-2 leading-tight focus:outline-none focus:bg-gray-700 focus:bg-gray-700"
-                selected={startTimeDelivery}
-                onChange={(date) => setStartTimeDelivery(date)}
+                selected={startTimePickup}
+                onChange={(date) => setStartTimePickup(date)}
                 showTimeSelect
                 showTimeSelectOnly
                 timeIntervals={15}
@@ -236,7 +269,7 @@ function CreateSchedule() {
                 timeCaption="Time"
                 dateFormat="h:mm aa"
               />
-            </div>
+            </div> */}
           </div>
           <div className="flex justify-between mt-5">
             <div>

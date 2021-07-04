@@ -14,7 +14,7 @@ import {
   Button,
   Pagination,
 } from '@windmill/react-ui'
-import { EditIcon, TrashIcon, SearchIcon, HeartIcon } from '../icons'
+import { ChecklistIcon } from '../icons'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   clearShipmentListStatus,
@@ -90,8 +90,8 @@ function TraceTrack() {
                 }
               >
                 <span className="icon">
-                  <i>
-                    <HeartIcon />
+                  <i className="flex justify-center p-1">
+                    <ChecklistIcon className="self-center" />
                   </i>
                 </span>
                 <span className="text">{data}</span>

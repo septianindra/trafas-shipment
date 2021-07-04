@@ -23,11 +23,13 @@ import {
 import Fuse from 'fuse.js'
 import toast, { Toaster } from 'react-hot-toast'
 import { clearShipmentStatusAuditByIdStatus } from '../app/shipmentStatusAuditsSlice'
+import { data } from 'autoprefixer'
 
 function Shipment() {
   const dispatch = useDispatch()
+  const [filterKey, setFilterKey] = useState('done')
 
-  const response = useSelector((state) => state.shipments.shipmentList)
+  let response = useSelector((state) => state.shipments.shipmentList)
   const shipmentListStatus = useSelector(
     (state) => state.shipments.shipmentListStatus,
   )
