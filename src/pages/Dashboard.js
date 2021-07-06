@@ -6,16 +6,61 @@ import {
   clearShipmentByIdStatus,
   fetchAllShipment,
   fetchShipment,
+  fetchShipmentByTodayDate,
 } from '../app/shipmentsSlice'
 import ReactHtmlParser from 'react-html-parser'
 import InfoCard from '../components/Cards/InfoCard'
 import RoundIcon from '../components/RoundIcon'
 import { PeopleIcon, MoneyIcon, SearchIcon } from '../icons'
+import { useAuth } from '../contexts/Auth'
 
 function Dashboard() {
+  // variable -----------------------------------------------------------
   const dispatch = useDispatch()
+  const { user } = useAuth()
   const [query, setQuery] = useState('')
-  const response = useSelector((state) => state.shipments.allShipmentList)
+  // const response = useSelector((state) => state.shipments.shipmentList)
+  const response = useSelector((state) => state.shipments.shipmentListByTodayDate)
+  //---------------------------------------------------------------------
+
+  // fetch all shipment---------------------------
+  const shipmentListStatus = useSelector(
+    (state) => state.shipments.shipmentListStatus,
+  )
+  useEffect(() => {
+    if (shipmentListStatus==='idle'){
+      dispatch(fetchShipment())
+    }
+  }, [shipmentListStatus,dispatch])
+  //----------------------------------------------
+
+  // fetch all shipment by today date-------------
+  const shipmentListByTodayDateStatus = useSelector(
+    (state) => state.shipments.shipmentListByTodayDateStatus,
+  )
+  useEffect(() => {
+    if (shipmentListByTodayDateStatus==='idle'){
+      dispatch(fetchShipmentByTodayDate())
+    }
+  }, [shipmentListByTodayDateStatus,dispatch])
+  //----------------------------------------------
+
+  // clear shipment by id filter -----------------
+  const shipmentByIdStatus = useSelector(
+    (state) => state.shipments.shipmentByIdStatus,
+  )
+  useEffect(() => {
+    if (shipmentByIdStatus === 'succeeded') {
+      dispatch(clearShipmentByIdStatus())
+    }
+  }, [shipmentByIdStatus, dispatch])
+  //----------------------------------------------
+
+
+
+  
+
+  
 
   // const response = useSelector(
   //   (state) => state.shipments.allShipmentList,
@@ -25,31 +70,17 @@ function Dashboard() {
   //     new Date().toDateString(),
   // )
 
-  const shipmentListStatus = useSelector(
-    (state) => state.shipments.shipmentListStatus,
-  )
-  const shipmentByIdStatus = useSelector(
-    (state) => state.shipments.shipmentByIdStatus,
-  )
+  
+ 
 
-  useEffect(() => {
-    if (shipmentByIdStatus === 'succeeded') {
-      dispatch(clearShipmentByIdStatus())
-    }
-  }, [shipmentByIdStatus, dispatch])
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     dispatch(fetchShipment())
+  //   }, 1500)
+  //   return () => clearInterval(interval)
+  // }, [])
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      dispatch(fetchAllShipment())
-    }, 1500)
-    return () => clearInterval(interval)
-  }, [])
 
-  useEffect(() => {
-    if (shipmentListStatus === 'idle') {
-      dispatch(fetchShipment())
-    }
-  }, [shipmentListStatus, dispatch])
 
   const [pageTable, setPageTable] = useState(1)
   const [dataTable, setDataTable] = useState([])
@@ -67,8 +98,11 @@ function Dashboard() {
     )
   }, [response, pageTable])
 
+  console.log(user);
+
   return (
     <div className="h-screen dark:bg-gray-700 dark:text-white">
+      
       <header className="z-40 py-4 bg-white shadow-bottom dark:bg-gray-800">
         <div className="container flex items-center justify-between px-6 mx-auto text-dark-600 dark:text-white-300">
           <span className="text-lg mr-5">TRAFAS</span>
@@ -101,6 +135,7 @@ function Dashboard() {
             />
           </InfoCard>
         </div>
+       
 
         <div className="cursor-pointer" onClick={() => console.log('clicked')}>
           <InfoCard title="Active Shipment" value="$ 46,760.89">

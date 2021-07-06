@@ -7,6 +7,7 @@ import Header from '../components/Header'
 import Main from '../containers/Main'
 import ThemedSuspense from '../components/ThemedSuspense'
 import { SidebarContext } from '../context/SidebarContext'
+import { PrivateRoute } from '../routes/PrivateRoute'
 
 const Page404 = lazy(() => import('../pages/404'))
 
@@ -33,11 +34,13 @@ function Layout() {
             <Switch>
               {routes.map((route, i) => {
                 return route.component ? (
-                  <Route
+                  <PrivateRoute
                     key={i}
                     exact={true}
                     path={`/app${route.path}`}
-                    render={(props) => <route.component {...props} />}
+                    roles={route.roles}
+                    component={route.component}
+                    // render={(props) => <route.component {...props} />}
                   />
                 ) : null
               })}

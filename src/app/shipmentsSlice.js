@@ -1,16 +1,20 @@
 import { createAsyncThunk, createSlice, current } from '@reduxjs/toolkit'
 import { supabase } from '../supabase'
 
+const date = new Date();
+const year = date.getFullYear();
+const month = date.getMonth();
+const dt = date.getDate();
+const shipment_date = String(year)+"-" +String(month)+'-'+String(dt)
+
+
 const initialState = {
-  id: [],
-  idStatus: 'idle',
-  idError: null,
-  allShipmentList: [],
-  allShipmentListStatus: 'idle',
-  allShipmentListError: null,
   shipmentList: [],
   shipmentListStatus: 'idle',
   shipmentListError: null,
+  shipmentListByTodayDate: [],
+  shipmentListByTodayDateStatus: 'idle',
+  shipmentListByTodayDateError: null,
   shipmentById: [],
   shipmentByIdStatus: 'idle',
   shipmentByIdError: null,
@@ -32,6 +36,15 @@ export const fetchShipment = createAsyncThunk(
       .from('shipments')
       .select()
       .order('shipment_date', { ascending: true })
+    return response
+  },
+)
+
+export const fetchShipmentByTodayDate = createAsyncThunk(
+  'shipments/fetchShipmentByTodayDate',
+  async () => {
+    const response = await supabase
+      .from('shipments').select().order('shipment_date', { ascending: true })
     return response
   },
 )
@@ -65,6 +78,22 @@ export const deleteShipment = createAsyncThunk(
   async (id) => {
     await supabase.from('shipments').delete().match({ id: id })
     return id
+  },
+)
+
+export const updateStatusShipment = createAsyncThunk(
+  'shipments/updateStatusShipment',
+  async (updatedData) => {
+    const { data, error } = await supabase
+      .from('shipments')
+      .update({
+        status: updatedData.status,
+        recipient: updatedData.recipient,
+        phone: updatedData.phone,
+      })
+      .eq('id', updatedData.id)
+    console.log(data)
+    return data
   },
 )
 
@@ -125,23 +154,30 @@ const shipmentsSlice = createSlice({
     },
     [fetchShipment.fulfilled]: (state, action) => {
       state.shipmentListStatus = 'succeeded'
-      state.shipmentList = state.shipmentList.concat(action.payload.data)
+      state.shipmentList = action.payload.data
     },
     [fetchShipment.rejected]: (state, action) => {
       state.shipmentListStatus = 'failed'
       state.shipmentListError = action.error.message
     },
-    [fetchAllShipment.pending]: (state) => {
-      state.allShipmentListStatus = 'loading'
+
+    [fetchShipmentByTodayDate.pending]: (state) => {
+      state.shipmentListByTodayDateStatus = 'loading'
     },
-    [fetchAllShipment.fulfilled]: (state, action) => {
-      state.allShipmentListStatus = 'succeeded'
-      state.allShipmentList = action.payload.data
+    [fetchShipmentByTodayDate.fulfilled]: (state, action) => {
+      state.shipmentListByTodayDateStatus = 'succeeded'
+      let value = (action.payload.data).filter(
+        (data) =>
+          new Date(String(data.shipment_date)).toDateString() ===
+          new Date().toDateString(),
+      )
+      state.shipmentListByTodayDate =  value.filter((data)=>data.status!=='done')
     },
-    [fetchAllShipment.rejected]: (state, action) => {
-      state.allShipmentListStatus = 'failed'
-      state.shipmentListError = action.error.message
+    [fetchShipmentByTodayDate.rejected]: (state, action) => {
+      state.shipmentListByTodayDateStatus = 'failed'
+      state.shipmentListByTodayDateError = action.error.message
     },
+
     [fetchShipmentById.pending]: (state) => {
       state.shipmentByIdStatus = 'loading'
     },

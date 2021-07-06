@@ -125,11 +125,13 @@ function EditEmployee() {
                 className="mt-1"
                 {...register('role', { required: true })}
               >
-                <option value="administrator">Administrator</option>
-                <option value="admin-staff">Staff Admin</option>
-                <option value="courier-staff">Staff Courier</option>
-                <option value="logistic-staff">Staff Logistic</option>
-                <option value="marketing-staff">Staff Marketing</option>
+                <option value="admin">Administrator</option>
+                <option value="admin-logistic">Admin Logistic</option>
+                <option value="admin-courier">Admin Courier</option>
+                <option value="admin-marketing">Admin Marketing</option>
+                <option value="staff-logistic">Staff Logistic</option>
+                <option value="staff-courier">Staff Courier</option>
+                <option value="staff-marketing">Staff Marketing</option>
               </Select>
             </Label>
           </div>

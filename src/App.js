@@ -28,7 +28,8 @@ function App() {
             <Route path="/dashboard" component={Dashboard} />
 
             {/* Place new routes over this */}
-            <PrivateRoute path="/app" component={Layout} />
+            <Route path="/app" component={Layout} />
+            {/* {Layout} */}
 
             {/* If you have an index page, you can remothis Redirect */}
             <Redirect exact from="/" to="/login" />

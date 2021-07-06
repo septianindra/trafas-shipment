@@ -29,11 +29,8 @@ function CreateEmployee() {
     formState: { isSubmitSuccessful },
   } = useForm({
     defaultValues: {
-      name: '',
-      phone: '',
       email: '',
       password: 'password',
-      role: '',
     },
   })
 
@@ -55,11 +52,8 @@ function CreateEmployee() {
   React.useEffect(() => {
     if (isSubmitSuccessful) {
       reset({
-        name: '',
-        phone: '',
         email: '',
         password: 'password',
-        role: '',
       })
     }
   }, [formState, reset])
@@ -101,13 +95,6 @@ function CreateEmployee() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-6 mt-4 mb-4 md:grid-cols-2 xl:grid-cols-2">
             <Label>
-              <span>Name</span>
-              <Input
-                className="mt-1"
-                {...register('name', { required: true })}
-              />
-            </Label>
-            <Label>
               <span>Email</span>
               <Input
                 className="mt-1"
@@ -120,26 +107,6 @@ function CreateEmployee() {
                 className="mt-1"
                 {...register('password', { required: true })}
               />
-            </Label>
-            <Label>
-              <span>Phone</span>
-              <Input
-                className="mt-1"
-                {...register('phone', { required: true })}
-              />
-            </Label>
-            <Label>
-              <span>Role</span>
-              <Select
-                className="mt-1"
-                {...register('role', { required: true })}
-              >
-                <option value="administrator">Administrator</option>
-                <option value="admin-staff">Staff Admin</option>
-                <option value="courier-staff">Staff Courier</option>
-                <option value="logistic-staff">Staff Logistic</option>
-                <option value="marketing-staff">Staff Marketing</option>
-              </Select>
             </Label>
           </div>
           <div className="flex justify-between mt-5">

@@ -17,50 +17,100 @@ const routes = [
   {
     path: '/dashboard',
     component: Dashboard,
+    roles: [
+      'admin',
+      'admin-logistic',
+      'admin-courier',
+      'admin-marketing',
+      'staff-logistic',
+      'staff-courier',
+      'staff-marketing',
+    ],
   },
   {
     path: '/shipment',
     component: Shipment,
+    roles: [
+      'admin',
+      'admin-logistic',
+      'admin-courier',
+      'admin-marketing',
+      'staff-logistic',
+      'staff-courier',
+      'staff-marketing',
+    ],
   },
   {
     path: '/shipment/new',
     component: CreateShipment,
+    roles: [
+      'admin',
+      'admin-logistic',
+      'admin-marketing',
+      'staff-logistic',
+      'staff-marketing',
+    ],
   },
   {
     path: '/shipment/edit/:id',
     component: EditShipment,
+    roles: ['admin', 'admin-logistic', 'admin-marketing'],
   },
   {
     path: '/shipment/track-trace/:id',
     component: TrackTrace,
+    roles: [
+      'admin',
+      'admin-logistic',
+      'admin-courier',
+      'admin-marketing',
+      'staff-logistic',
+      'staff-courier',
+      'staff-marketing',
+    ],
   },
   {
     path: '/shipment/detail/:id',
     component: DetailShipment,
+    roles: [
+      'admin',
+      'admin-logistic',
+      'admin-courier',
+      'admin-marketing',
+      'staff-logistic',
+      'staff-courier',
+      'staff-marketing',
+    ],
   },
   {
     path: '/employee',
     component: Employee,
+    roles: ['admin'],
   },
   {
     path: '/employee/new',
     component: CreateEmployee,
+    roles: ['admin'],
   },
   {
     path: '/employee/edit/:id',
     component: EditEmployee,
+    roles: ['admin'],
   },
   {
     path: '/schedule',
     component: Schedule,
+    roles: ['admin', 'admin-courier', 'staff-courier'],
   },
   {
     path: '/schedule/new',
     component: CreateSchedule,
+    roles: ['admin', 'admin-courier'],
   },
   {
     path: '/schedule/edit/:id',
     component: EditSchedule,
+    roles: ['admin', 'admin-courier'],
   },
 ]
 

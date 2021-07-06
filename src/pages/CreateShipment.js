@@ -138,7 +138,6 @@ function CreateShipment() {
             <Label>
               <span>Set no.:</span>
               <Input
-                value={setnumber}
                 className="mt-1"
                 {...register('transfer_no', { required: true })}
               />
