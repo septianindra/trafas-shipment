@@ -154,8 +154,8 @@ function Delivery({ query, response }) {
           <tr>
             <TableCell>Shipment ID</TableCell>
             <TableCell>Employee ID</TableCell>
-            <TableCell>Delivery Date</TableCell>
-            <TableCell>Pickup Date</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell>Status</TableCell>
             <TableCell className="text-center">Action</TableCell>
           </tr>
         </TableHeader>

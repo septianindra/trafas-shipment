@@ -39,7 +39,7 @@ function CreateEmployee() {
       try {
         const resultAction = await dispatch(createNewEmployee(data))
         unwrapResult(resultAction)
-        if (resultAction.payload.error === null) {
+        if (resultAction.payload.data) {
           toast.success('Berhasil menambahkan data!')
         }
       } catch (error) {
