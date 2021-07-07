@@ -1,7 +1,7 @@
-let routes
-switch ('admin') {
-  case 'admin':
-    routes = [
+const roles = [
+  {
+    role: 'admin',
+    routes: [
       {
         path: '/dashboard',
         icon: 'HomeIcon',
@@ -22,10 +22,11 @@ switch ('admin') {
         icon: 'PeopleIcon',
         name: 'Employee',
       },
-    ]
-    break
-  case 'admin-logistic':
-    routes = [
+    ],
+  },
+  {
+    role: 'admin-logistic',
+    routes: [
       {
         path: '/dashboard',
         icon: 'HomeIcon',
@@ -36,20 +37,11 @@ switch ('admin') {
         icon: 'MailIcon',
         name: 'Shipment',
       },
-      {
-        path: '/app/schedule',
-        icon: 'GithubIcon',
-        name: 'Courier Schedule',
-      },
-      {
-        path: '/app/employee',
-        icon: 'PeopleIcon',
-        name: 'Employee',
-      },
-    ]
-    break
-  case 'admin-courier':
-    routes = [
+    ],
+  },
+  {
+    role: 'admin-courier',
+    routes: [
       {
         path: '/dashboard',
         icon: 'HomeIcon',
@@ -60,10 +52,11 @@ switch ('admin') {
         icon: 'GithubIcon',
         name: 'Courier Schedule',
       },
-    ]
-    break
-  case 'admin-marketing':
-    routes = [
+    ],
+  },
+  {
+    role: 'admin-marketing',
+    routes: [
       {
         path: '/dashboard',
         icon: 'HomeIcon',
@@ -74,10 +67,11 @@ switch ('admin') {
         icon: 'MailIcon',
         name: 'Shipment',
       },
-    ]
-    break
-  case 'staff-logistic':
-    routes = [
+    ],
+  },
+  {
+    role: 'staff-logistic',
+    routes: [
       {
         path: '/dashboard',
         icon: 'HomeIcon',
@@ -88,36 +82,38 @@ switch ('admin') {
         icon: 'MailIcon',
         name: 'Shipment',
       },
-    ]
-    break
-  case 'staff-courier':
-    routes = [
+    ],
+  },
+  {
+    role: 'staff-courier',
+    routes: [
       {
         path: '/dashboard',
         icon: 'HomeIcon',
         name: 'Dashboard',
       },
+      {
+        path: '/app/schedule',
+        icon: 'GithubIcon',
+        name: 'Courier Schedule',
+      },
+    ],
+  },
+  {
+    role: 'staff-marketing',
+    routes: [
+      {
+        path: '/dashboard',
+        icon: 'HomeIcon',
+        name: 'Dashboard',
+      },
+      {
+        path: '/app/shipment',
+        icon: 'MailIcon',
+        name: 'Shipment',
+      },
+    ],
+  },
+]
 
-      {
-        path: '/app/schedule',
-        icon: 'GithubIcon',
-        name: 'Courier Schedule',
-      },
-    ]
-    break
-  case 'staff-marketing':
-    routes = [
-      {
-        path: '/dashboard',
-        icon: 'HomeIcon',
-        name: 'Dashboard',
-      },
-      {
-        path: '/app/shipment',
-        icon: 'MailIcon',
-        name: 'Shipment',
-      },
-    ]
-}
-
-export default routes
+export default roles

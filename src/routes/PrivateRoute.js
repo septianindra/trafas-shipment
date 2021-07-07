@@ -1,11 +1,11 @@
 import React from 'react'
-import { Route, Redirect } from 'react-router-dom'
 
+import { Route, Redirect } from 'react-router-dom'
 import { useAuth } from '../contexts/Auth'
 
 export function PrivateRoute({ component: Component, roles, ...rest }) {
   const { user } = useAuth()
-  // console.log(user.id)
+  const temp = user.user_metadata.role
 
   return (
     <Route
@@ -24,7 +24,7 @@ export function PrivateRoute({ component: Component, roles, ...rest }) {
           return <Redirect to="/login" />
         }
         // check if route is restricted by role
-        if (roles && roles.indexOf('admin') === -1) {
+        if (roles && roles.indexOf(temp) === -1) {
           // role not authorised so redirect to home page
           return <Redirect to="/app" />
         }

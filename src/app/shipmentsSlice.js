@@ -86,15 +86,15 @@ export const updateShipment = createAsyncThunk(
     const { data, error } = await supabase
       .from('shipments')
       .update({
-        // transfer_no: updatedData.transfer_no,
-        // customer_name: updatedData.customer_name,
-        // shipment_address: updatedData.shipment_address,
-        // shipment_date: updatedData.shipment_date,
-        // pickup_date: updatedData.pickup_date,
+        transfer_no: updatedData.transfer_no,
+        customer_name: updatedData.customer_name,
+        shipment_address: updatedData.shipment_address,
+        shipment_date: updatedData.shipment_date,
+        pickup_date: updatedData.pickup_date,
         status: updatedData.status,
         recipient: updatedData.recipient,
         phone: updatedData.phone,
-        // product_list: updatedData.product_list,
+        product_list: updatedData.product_list,
       })
       .eq('id', updatedData.id)
     console.log(data)

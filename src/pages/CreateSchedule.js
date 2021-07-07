@@ -1,52 +1,36 @@
 import React, { useEffect, useState } from 'react'
 import PageTitle from '../components/Typography/PageTitle'
 import { Input, HelperText, Label, Button, Select } from '@windmill/react-ui'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import toast, { Toaster, useToaster } from 'react-hot-toast'
 import { FulfillingBouncingCircleSpinner } from 'react-epic-spinners'
 import { Editor } from '@tinymce/tinymce-react'
-import {
-  clearCreateScheduleStatus,
-  createNewSchedule,
-  fetchScheduleById,
-} from '../app/schedulesSlice'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import Fuse from 'fuse.js'
-import { fetchShipment } from '../app/shipmentsSlice'
+import { clearShipmentListStatus, fetchShipment } from '../app/shipmentsSlice'
 import { fetchEmployee } from '../app/employeesSlice'
+import { data } from 'autoprefixer'
+import {
+  clearCreateDeliverieStatus,
+  createNewDeliverie,
+} from '../app/deliveriesSlice'
+import { clearCreatePickupStatus, createNewPickup } from '../app/pickupsSlice'
 
 function CreateSchedule() {
+  let { type } = useParams()
   const dispatch = useDispatch()
-  const [dateRangeDelivery, setDateRangeDelivery] = useState([null, null])
-  const [startDateDelivery, endDateDelivery] = dateRangeDelivery
-  const [dateRangePickup, setDateRangePickup] = useState([null, null])
-  const [startDatePickup, endDatePickup] = dateRangePickup
-
-  const [startTimeDelivery, setStartTimeDelivery] = useState(new Date())
-  const [endTimeDelivery, setEndTimeDelivery] = useState(new Date())
-  const [startTimePickup, setStartTimePickup] = useState(new Date())
-  const [endTimePickup, setEndTimePickup] = useState(new Date())
-
-  const shipmentList = useSelector((state) => state.shipments.shipmentList)
-  const shipmentListStatus = useSelector(
-    (state) => state.shipments.shipmentListStatus,
+  const [shipmentStatus, setShipmentStatus] = useState('idle')
+  const formType = type
+  const shipmentListByStatusCollected = useSelector(
+    (state) => state.shipments.shipmentListByStatusCollected,
   )
-
-  const scheduleById = useSelector((state) => state.schedules.scheduleById)
-  const scheduleByIdStatus = useSelector(
-    (state) => state.schedules.scheduleByIdStatus,
+  const shipmentListByStatusDelivering = useSelector(
+    (state) => state.shipments.shipmentListByStatusDelivering,
   )
-
-  useEffect(() => {
-    if (shipmentListStatus === 'idle') {
-      dispatch(fetchShipment())
-    }
-  }, [shipmentListStatus, dispatch])
-
   const employeeList = useSelector((state) => state.employees.employeeList)
   const employeeListStatus = useSelector(
     (state) => state.employees.employeeListStatus,
@@ -55,69 +39,17 @@ function CreateSchedule() {
   useEffect(() => {
     if (employeeListStatus === 'idle') {
       dispatch(fetchEmployee())
+      dispatch(fetchShipment())
     }
   }, [employeeListStatus, dispatch])
 
-  const [queryShipment, setQueryShipment] = useState('')
-  const fuse = new Fuse(shipmentList, {
-    keys: ['transfer_no', 'customer_name'],
-  })
-  const resultShipment = fuse.search(queryShipment)
-
-  const createScheduleStatus = useSelector(
-    (state) => state.schedules.createScheduleStatus,
-  )
-
-  const canSave = createScheduleStatus === 'idle'
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-    formState,
-    formState: { errors },
-    formState: { isSubmitSuccessful },
-  } = useForm({
-    defaultValues: {
-      shipment_id: '',
-      employee_id: '',
-    },
-  })
-  const employeeId = watch(['employee_id'])
-
-  const onSubmit = async (data) => {
-    data.delivery_start_date = startDateDelivery
-    data.delivery_end_date = endDateDelivery
-    data.delivery_start_time = startTimeDelivery
-    data.delivery_end_time = endTimeDelivery
-    data.pickup_start_date = startDatePickup
-    data.pickup_end_date = endDatePickup
-    data.pickup_start_time = startTimePickup
-    data.pickup_end_time = endTimePickup
-    console.log(data)
-    if (canSave)
-      try {
-        const resultAction = await dispatch(createNewSchedule(data))
-        unwrapResult(resultAction)
-        if (resultAction.payload.error === null) {
-          toast.success('Berhasil menambahkan data!')
-        }
-      } catch (error) {
-        if (error) throw toast.error('Gagal menambahkan data!')
-      } finally {
-        dispatch(clearCreateScheduleStatus())
-      }
-  }
-
-  React.useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset({
-        shipment_id: '',
-        employee_id: '',
-      })
+  useEffect(() => {
+    if (shipmentStatus === 'idle') {
+      dispatch(clearShipmentListStatus())
+      dispatch(fetchShipment())
+      setShipmentStatus('succeeded')
     }
-  }, [formState, reset])
+  }, [shipmentStatus, dispatch])
 
   return (
     <>
@@ -150,9 +82,81 @@ function CreateSchedule() {
           },
         }}
       />
-      <PageTitle>Jadwal Pengiriman Baru</PageTitle>
-      <h1 className="text-white">{employeeId}</h1>
+      {formType === 'delivery' ? (
+        <DeliveryForm
+          responses={shipmentListByStatusCollected}
+          employees={employeeList}
+        />
+      ) : (
+        <PickupForm
+          responses={shipmentListByStatusDelivering}
+          employees={employeeList}
+        />
+      )}
+    </>
+  )
+}
 
+function DeliveryForm({ responses, employees }) {
+  const dispatch = useDispatch()
+  const [dateRangeDelivery, setDateRangeDelivery] = useState([null, null])
+  const [startDateDelivery, endDateDelivery] = dateRangeDelivery
+
+  const [startTimeDelivery, setStartTimeDelivery] = useState(new Date())
+  const [endTimeDelivery, setEndTimeDelivery] = useState(new Date())
+
+  const createDeliverieStatus = useSelector(
+    (state) => state.deliveries.createDeliverieStatus,
+  )
+
+  const canSave = createDeliverieStatus === 'idle'
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState,
+    formState: { errors },
+    formState: { isSubmitSuccessful },
+  } = useForm({
+    defaultValues: {
+      shipment_id: '',
+      employee_id: '',
+    },
+  })
+
+  const onSubmit = async (data) => {
+    data.start_date = startDateDelivery
+    data.end_date = endDateDelivery
+    data.start_time = startTimeDelivery
+    data.end_time = endTimeDelivery
+    console.log(data)
+    if (canSave)
+      try {
+        const resultAction = await dispatch(createNewDeliverie(data))
+        unwrapResult(resultAction)
+        if (resultAction.payload.error === null) {
+          toast.success('Berhasil menambahkan data!')
+        }
+      } catch (error) {
+        if (error) throw toast.error('Gagal menambahkan data!')
+      } finally {
+        dispatch(clearCreateDeliverieStatus())
+      }
+  }
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset({
+        shipment_id: '',
+        employee_id: '',
+      })
+    }
+  }, [formState, reset])
+  return (
+    <>
+      <PageTitle>New Delivery Schedule</PageTitle>
       <div className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-6 mt-4 mb-4 sm:grid-cols-2 xl:grid-cols-2">
@@ -165,7 +169,7 @@ function CreateSchedule() {
                 <option disabled selected>
                   choose shipment
                 </option>
-                {shipmentList.map((data, index) => (
+                {responses.map((data, index) => (
                   <option key={index} value={data.id}>
                     {data.customer_name}
                   </option>
@@ -181,7 +185,7 @@ function CreateSchedule() {
                 <option disabled selected>
                   choose courier
                 </option>
-                {employeeList.map((data, index) => (
+                {employees.map((data, index) => (
                   <option key={index} value={data.id}>
                     {data.name}
                   </option>
@@ -229,7 +233,127 @@ function CreateSchedule() {
                 dateFormat="h:mm aa"
               />
             </div>
-            {/* <div className="sm:mt-4 lg:mt-0">
+          </div>
+          <div className="flex justify-between mt-5">
+            <div>
+              <Button tag={Link} to="/app/shipment" size="small">
+                Cancel
+              </Button>
+            </div>
+            <div>
+              {createDeliverieStatus === 'loading' ? (
+                <>
+                  <FulfillingBouncingCircleSpinner size="20" />
+                </>
+              ) : (
+                <Button type="submit" size="small">
+                  Submit
+                </Button>
+              )}
+            </div>
+          </div>
+        </form>
+      </div>
+    </>
+  )
+}
+
+function PickupForm({ responses, employees }) {
+  const dispatch = useDispatch()
+  const [dateRangePickup, setDateRangePickup] = useState([null, null])
+  const [startDatePickup, endDatePickup] = dateRangePickup
+
+  const [startTimePickup, setStartTimePickup] = useState(new Date())
+  const [endTimePickup, setEndTimePickup] = useState(new Date())
+
+  const createPickupStatus = useSelector(
+    (state) => state.pickups.createPickupStatus,
+  )
+
+  const canSave = createPickupStatus === 'idle'
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState,
+    formState: { errors },
+    formState: { isSubmitSuccessful },
+  } = useForm({
+    defaultValues: {
+      shipment_id: '',
+      employee_id: '',
+    },
+  })
+
+  const onSubmit = async (data) => {
+    data.start_date = startDatePickup
+    data.end_date = endDatePickup
+    data.start_time = startTimePickup
+    data.end_time = endTimePickup
+    console.log(data)
+    if (canSave)
+      try {
+        const resultAction = await dispatch(createNewPickup(data))
+        unwrapResult(resultAction)
+        if (resultAction.payload.error === null) {
+          toast.success('Berhasil menambahkan data!')
+        }
+      } catch (error) {
+        if (error) throw toast.error('Gagal menambahkan data!')
+      } finally {
+        dispatch(clearCreatePickupStatus())
+      }
+  }
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset({
+        shipment_id: '',
+        employee_id: '',
+      })
+    }
+  }, [formState, reset])
+  return (
+    <>
+      <PageTitle>New Pickup Schedule </PageTitle>
+      <div className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid gap-6 mt-4 mb-4 sm:grid-cols-2 xl:grid-cols-2">
+            <Label>
+              <span>Shipment ID :</span>
+              <Select
+                className="mt-1"
+                {...register('shipment_id', { required: true })}
+              >
+                <option disabled selected>
+                  choose shipment
+                </option>
+                {responses.map((data, index) => (
+                  <option key={index} value={data.id}>
+                    {data.customer_name}
+                  </option>
+                ))}
+              </Select>
+            </Label>
+            <Label>
+              <span>Nama Kurir</span>
+              <Select
+                className="mt-1"
+                {...register('employee_id', { required: true })}
+              >
+                <option disabled selected>
+                  choose courier
+                </option>
+                {employees.map((data, index) => (
+                  <option key={index} value={data.id}>
+                    {data.name}
+                  </option>
+                ))}
+              </Select>
+            </Label>
+            <div className="sm:mt-4 lg:mt-0">
               <span className="block text-sm text-gray-400 tracking-wide mb-2">
                 Tanggal ambil barang
               </span>
@@ -269,7 +393,7 @@ function CreateSchedule() {
                 timeCaption="Time"
                 dateFormat="h:mm aa"
               />
-            </div> */}
+            </div>
           </div>
           <div className="flex justify-between mt-5">
             <div>
@@ -278,7 +402,7 @@ function CreateSchedule() {
               </Button>
             </div>
             <div>
-              {createScheduleStatus === 'loading' ? (
+              {createPickupStatus === 'loading' ? (
                 <>
                   <FulfillingBouncingCircleSpinner size="20" />
                 </>

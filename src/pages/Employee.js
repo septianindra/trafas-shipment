@@ -31,7 +31,7 @@ function Employee() {
   const dispatch = useDispatch()
   const [query, setQuery] = useState('')
   const response = useSelector((state) => state.employees.employeeList)
-  const fuse = new Fuse(response, { keys: ['name', 'role'] })
+  const fuse = new Fuse(response, { keys: ['name'] })
   const results = fuse.search(query)
   const employeeListStatus = useSelector(
     (state) => state.employees.employeeListStatus,
@@ -124,7 +124,6 @@ function Employee() {
               <TableCell>Name</TableCell>
               <TableCell>Phone</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Password</TableCell>
               <TableCell>Role</TableCell>
               <TableCell className="text-center">Action</TableCell>
             </tr>
@@ -133,19 +132,25 @@ function Employee() {
             {dataTable.map((data, i) => (
               <TableRow key={i}>
                 <TableCell>
-                  <span className="text-sm">{data.name}</span>
+                  <span className="text-sm">
+                    {data.name ? data.name : 'null'}
+                  </span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">{data.phone}</span>
+                  <span className="text-sm">
+                    {data.phone ? data.phone : 'null'}
+                  </span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">{data.email}</span>
+                  <span className="text-sm">
+                    {data.email ? data.email : 'null'}
+                  </span>
                 </TableCell>
+
                 <TableCell>
-                  <span className="text-sm">{data.password}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{data.role}</span>
+                  <span className="text-sm">
+                    {data.role ? JSON.stringify(data.role) : 'null'}
+                  </span>
                 </TableCell>
                 <TableCell>
                   <div className="flex   justify-center ">

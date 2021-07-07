@@ -62,11 +62,12 @@ export const updateEmployee = createAsyncThunk(
       .update({
         name: updatedData.name,
         phone: updatedData.phone,
-        email: updatedData.email,
-        password: updatedData.password,
         role: updatedData.role,
       })
       .eq('id', updatedData.id)
+    if (error) {
+      alert(error.message)
+    }
     return data
   },
 )

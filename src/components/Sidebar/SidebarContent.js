@@ -1,9 +1,10 @@
-import React from 'react'
-import routes from '../../routes/sidebar'
+import React, { useEffect } from 'react'
+import roles from '../../routes/sidebar'
 import { NavLink, Route } from 'react-router-dom'
 import * as Icons from '../../icons'
 import SidebarSubmenu from './SidebarSubmenu'
 import { Button } from '@windmill/react-ui'
+import { useAuth } from '../../contexts/Auth'
 
 function Icon({ icon, ...props }) {
   const Icon = Icons[icon]
@@ -11,6 +12,9 @@ function Icon({ icon, ...props }) {
 }
 
 function SidebarContent() {
+  const { user } = useAuth()
+  const temp = user.user_metadata.role
+  const routes = roles.find((data) => data.role === temp)
   return (
     <div className="py-4 text-gray-500 dark:text-gray-400">
       <a
@@ -20,7 +24,7 @@ function SidebarContent() {
         Mitra Fajar Selaras
       </a>
       <ul className="mt-6">
-        {routes.map((route) =>
+        {routes.routes.map((route) =>
           route.routes ? (
             <SidebarSubmenu route={route} key={route.name} />
           ) : (

@@ -16,6 +16,7 @@ import {
 } from '../app/shipmentsSlice'
 import { Editor } from '@tinymce/tinymce-react'
 import { romanize } from 'react-roman'
+
 function CreateShipment() {
   const dispatch = useDispatch()
   const [product_list, setProduct_list] = useState('')
@@ -47,7 +48,7 @@ function CreateShipment() {
   const month = date.getMonth()
   const year = date.getFullYear()
   const setnumber =
-    shipmentList.length.pad(4) + '/DO-MFS/' + romanize(month) + '/' + year
+    (shipmentList.length + 1).pad(4) + '/DO-MFS/' + romanize(month) + '/' + year
 
   const {
     register,

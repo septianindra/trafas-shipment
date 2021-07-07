@@ -16,38 +16,73 @@ import {
 import { EditIcon, TrashIcon, SearchIcon, PeopleIcon } from '../icons'
 import { useDispatch, useSelector } from 'react-redux'
 import Fuse from 'fuse.js'
-import { deleteSchedule, fetchSchedule } from '../app/schedulesSlice'
 import InfoCard from '../components/Cards/InfoCard'
 import RoundIcon from '../components/RoundIcon'
 import SectionTitle from '../components/Typography/SectionTitle'
+import {
+  clearDeliverieByIdStatus,
+  deleteDeliverie,
+  fetchDeliverie,
+} from '../app/deliveriesSlice'
+import { clearPickupByIdStatus, fetchPickup } from '../app/pickupsSlice'
 
 function Schedule() {
   const dispatch = useDispatch()
   const [link, setLink] = useState('delivery')
-  const scheduleList = useSelector((state) => state.schedules.scheduleList)
-  const scheduleListStatus = useSelector(
-    (state) => state.schedules.scheduleListStatus,
+  const [query, setQuery] = useState('')
+
+  const deliverieList = useSelector((state) => state.deliveries.deliverieList)
+  const deliverieListStatus = useSelector(
+    (state) => state.deliveries.deliverieListStatus,
   )
-  const scheduleByIdStatus = useSelector(
-    (state) => state.schedules.scheduleByIdStatus,
+
+  const deliverieByIdStatus = useSelector(
+    (state) => state.deliveries.deliverieByIdStatus,
   )
 
   useEffect(() => {
-    if (scheduleListStatus === 'idle') {
-      dispatch(fetchSchedule())
+    if (deliverieByIdStatus === 'succeeded') {
+      dispatch(clearDeliverieByIdStatus())
     }
-  }, [scheduleListStatus, dispatch])
+  }, [deliverieByIdStatus, dispatch])
+
+  useEffect(() => {
+    if (deliverieListStatus === 'idle') {
+      dispatch(fetchDeliverie())
+    }
+  }, [deliverieListStatus, dispatch])
+
+  const pickupList = useSelector((state) => state.pickups.pickupList)
+  const pickupListStatus = useSelector(
+    (state) => state.pickups.pickupListStatus,
+  )
+  const pickupByIdStatus = useSelector(
+    (state) => state.pickups.pickupByIdStatus,
+  )
+
+  useEffect(() => {
+    if (pickupByIdStatus === 'succeeded') {
+      dispatch(clearPickupByIdStatus())
+    }
+  }, [pickupByIdStatus, dispatch])
+
+  useEffect(() => {
+    if (pickupListStatus === 'idle') {
+      dispatch(fetchPickup())
+    }
+  }, [pickupListStatus, dispatch])
+
   const newDeliveryBtn = (
-    <Button size="small" tag={Link} to="/app/schedule/new">
+    <Button size="small" tag={Link} to="/app/schedule/new/delivery">
       + new delivery
     </Button>
   )
   const newPickupBtn = (
-    <Button size="small" tag={Link} to="/app/schedule/new">
+    <Button size="small" tag={Link} to="/app/schedule/new/pickup">
       + new pickup
     </Button>
   )
-  const [query, setQuery] = useState('')
+
   return (
     <>
       <PageTitle>
@@ -100,7 +135,11 @@ function Schedule() {
           />
         </div>
       </div>
-      <Delivery query={query} response={scheduleList} />
+      {link === 'delivery' ? (
+        <Delivery query={query} response={deliverieList} />
+      ) : (
+        <Pickup query={query} response={pickupList} />
+      )}
     </>
   )
 }
@@ -122,7 +161,7 @@ function Delivery({ query, response }) {
   }
 
   function removeOrganization(id) {
-    dispatch(deleteSchedule(id))
+    dispatch(deleteDeliverie(id))
   }
 
   let searchResult = []
@@ -147,6 +186,124 @@ function Delivery({ query, response }) {
       )
     }
   }, [response, query, pageTable])
+
+  return (
+    <TableContainer className="mb-8 ">
+      <Table className=" w-full">
+        <TableHeader>
+          <tr>
+            <TableCell>Shipment ID</TableCell>
+            <TableCell>Employee ID</TableCell>
+            <TableCell>Start Date</TableCell>
+            <TableCell>End Date</TableCell>
+            <TableCell className="text-center">Action</TableCell>
+          </tr>
+        </TableHeader>
+        <TableBody>
+          {dataTable.map((data, i) => (
+            <TableRow key={i}>
+              <TableCell>
+                <span className="text-sm">{data.shipment_id}</span>
+              </TableCell>
+              <TableCell>
+                <span className="text-sm">{data.employee_id}</span>
+              </TableCell>
+              <TableCell>
+                <span className="text-sm">{`${new Date(
+                  data.start_date,
+                ).toLocaleDateString()} -  ${new Date(
+                  data.start_time,
+                ).toLocaleTimeString()}`}</span>
+              </TableCell>
+              <TableCell>
+                <span className="text-sm">{`${new Date(
+                  data.end_date,
+                ).toLocaleDateString()} -  ${new Date(
+                  data.end_time,
+                ).toLocaleTimeString()}`}</span>
+              </TableCell>
+              <TableCell>
+                <div className="flex   justify-center ">
+                  <div className=" space-x-4">
+                    <Button
+                      tag={Link}
+                      to={`/app/schedule/edit/delivery/${data.id}`}
+                      layout="link"
+                      size="icon"
+                      aria-label="Edit"
+                    >
+                      <EditIcon className="w-5 h-5" aria-hidden="true" />
+                    </Button>
+                    <Button
+                      onClick={() => removeOrganization(data.id)}
+                      layout="link"
+                      size="icon"
+                      aria-label="Delete"
+                    >
+                      <TrashIcon className="w-5 h-5" aria-hidden="true" />
+                    </Button>
+                  </div>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <TableFooter>
+        <Pagination
+          totalResults={totalResults}
+          resultsPerPage={resultsPerPage}
+          onChange={onPageChangeTable}
+          label="Table navigation"
+        />
+      </TableFooter>
+    </TableContainer>
+  )
+}
+
+function Pickup({ response, query }) {
+  const dispatch = useDispatch()
+  const fuse = new Fuse(response, { keys: ['name'] })
+  const results = fuse.search(query)
+
+  const [pageTable, setPageTable] = useState(1)
+
+  const [dataTable, setDataTable] = useState([])
+
+  const resultsPerPage = 7
+  const totalResults = response.length
+
+  function onPageChangeTable(p) {
+    setPageTable(p)
+  }
+
+  function removeOrganization(id) {
+    dispatch(deleteDeliverie(id))
+  }
+
+  let searchResult = []
+  useEffect(() => {
+    if (query) {
+      for (let index = 0; index < results.length; index++) {
+        searchResult = searchResult.concat(results[index].item)
+      }
+      setDataTable(
+        searchResult.slice(
+          (pageTable - 1) * resultsPerPage,
+          pageTable * resultsPerPage,
+        ),
+      )
+      console.log(searchResult)
+    } else {
+      setDataTable(
+        response.slice(
+          (pageTable - 1) * resultsPerPage,
+          pageTable * resultsPerPage,
+        ),
+      )
+    }
+  }, [response, query, pageTable])
+
   return (
     <TableContainer className="mb-8 ">
       <Table className=" w-full">
@@ -170,9 +327,9 @@ function Delivery({ query, response }) {
               </TableCell>
               <TableCell>
                 <span className="text-sm">{`${new Date(
-                  data.delivery_start_date,
+                  data.start_date,
                 ).toLocaleDateString()} - ${new Date(
-                  data.delivery_end_date,
+                  data.end_date,
                 ).toLocaleDateString()}`}</span>
               </TableCell>
               <TableCell>
@@ -229,7 +386,5 @@ function Delivery({ query, response }) {
     </TableContainer>
   )
 }
-
-function Pickup() {}
 
 export default Schedule

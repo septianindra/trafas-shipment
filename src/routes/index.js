@@ -103,12 +103,12 @@ const routes = [
     roles: ['admin', 'admin-courier', 'staff-courier'],
   },
   {
-    path: '/schedule/new',
+    path: '/schedule/new/:type',
     component: CreateSchedule,
     roles: ['admin', 'admin-courier'],
   },
   {
-    path: '/schedule/edit/:id',
+    path: '/schedule/edit/:type/:id',
     component: EditSchedule,
     roles: ['admin', 'admin-courier'],
   },
