@@ -33,12 +33,13 @@ import {
 import { Editor } from '@tinymce/tinymce-react'
 import SectionTitle from '../components/Typography/SectionTitle'
 import './pages.css'
-
+import { useHistory } from 'react-router-dom'
 import { HeartIcon } from '../icons'
 import Tracking from '../components/Tracking'
 import { fetchShipmentStatusAuditById } from '../app/shipmentStatusAuditsSlice'
 
-function DetailShipment(url) {
+function DetailShipment() {
+  let history = useHistory()
   let { id } = useParams()
   const [status, setStatus] = useState('')
   const [query, setQuery] = useState('confirmed')
@@ -122,6 +123,7 @@ function DetailShipment(url) {
         reset({
           status: '',
         })
+        history.push('/app')
       }
   }
   console.log(shipmentStatusAuditById)
@@ -267,24 +269,12 @@ function DetailShipment(url) {
             {ReactHtmlParser(shipmentById.product_list)}
           </div>
         </Label>
-        {/* <div className="flex justify-between mt-5">
-          <div>
-            <Button tag={Link} to="/app/shipment" size="small">
-              Cancel
-            </Button>
+        <Label>
+          <span>Note</span>
+          <div className="my-2 p-2 bg-gray-700 text-gray-300">
+            {shipmentById.note}
           </div>
-          <div>
-            {createShipmentStatus === 'loading' ? (
-              <>
-                <FulfillingBouncingCircleSpinner size="20" />
-              </>
-            ) : (
-              <Button type="submit" size="small">
-                Submit
-              </Button>
-            )}
-          </div>
-        </div> */}
+        </Label>
       </div>
     </>
   )

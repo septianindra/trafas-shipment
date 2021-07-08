@@ -20,7 +20,11 @@ const initialState = {
 }
 
 export const fetchPickup = createAsyncThunk('pickups/fetchPickup', async () => {
-  const response = await supabase.from('schedules_pickup').select()
+  const response = await supabase.from('schedules_pickup').select(`
+  *,
+  employees:employee_id ( name ),
+  shipments:shipment_id ( customer_name,status )
+  `)
   return response
 })
 
@@ -104,7 +108,7 @@ const pickupsSlice = createSlice({
     },
     [fetchPickup.fulfilled]: (state, action) => {
       state.pickupListStatus = 'succeeded'
-      state.pickupList = state.pickupList.concat(action.payload.data)
+      state.pickupList = action.payload.data
     },
     [fetchPickup.rejected]: (state, action) => {
       state.pickupListStatus = 'failed'

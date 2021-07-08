@@ -45,17 +45,6 @@ function Dashboard() {
   }, [shipmentListStatus, dispatch])
   //----------------------------------------------
 
-  // fetch all shipment by today date-------------
-  const shipmentListByTodayDateStatus = useSelector(
-    (state) => state.shipments.shipmentListByTodayDateStatus,
-  )
-  useEffect(() => {
-    if (shipmentListByTodayDateStatus === 'idle') {
-      dispatch(fetchShipment())
-    }
-  }, [shipmentListByTodayDateStatus, dispatch])
-  //----------------------------------------------
-
   // clear shipment by id filter -----------------
   const shipmentByIdStatus = useSelector(
     (state) => state.shipments.shipmentByIdStatus,

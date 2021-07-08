@@ -22,7 +22,11 @@ const initialState = {
 export const fetchDeliverie = createAsyncThunk(
   'deliveries/fetchDeliverie',
   async () => {
-    const response = await supabase.from('schedules_delivery').select()
+    const response = await supabase.from('schedules_delivery').select(`
+    *,
+    employees:employee_id ( name ),
+    shipments:shipment_id ( customer_name,status )
+  `)
     return response
   },
 )
@@ -107,7 +111,7 @@ const deliveriesSlice = createSlice({
     },
     [fetchDeliverie.fulfilled]: (state, action) => {
       state.deliverieListStatus = 'succeeded'
-      state.deliverieList = state.deliverieList.concat(action.payload.data)
+      state.deliverieList = action.payload.data
     },
     [fetchDeliverie.rejected]: (state, action) => {
       state.deliverieListStatus = 'failed'

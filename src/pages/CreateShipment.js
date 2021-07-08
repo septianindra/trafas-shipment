@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import PageTitle from '../components/Typography/PageTitle'
-import { Input, HelperText, Label, Button, Select } from '@windmill/react-ui'
+import { Input, Textarea, Label, Button, Select } from '@windmill/react-ui'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -9,7 +9,6 @@ import toast, { Toaster, useToaster } from 'react-hot-toast'
 import { FulfillingBouncingCircleSpinner } from 'react-epic-spinners'
 import {
   clearCreateShipmentStatus,
-  clearShipmentList,
   clearShipmentListStatus,
   createNewShipment,
   fetchShipment,
@@ -66,6 +65,7 @@ function CreateShipment() {
       pickup_date: '',
       status: 'order confirmed',
       product_list: '',
+      note: '',
     },
   })
 
@@ -96,6 +96,7 @@ function CreateShipment() {
         pickup_date: '',
         status: 'order confirmed',
         product_list: '',
+        note: '',
       })
     }
   }, [formState, reset])
@@ -140,7 +141,7 @@ function CreateShipment() {
               <span>Set no.:</span>
               <Input
                 className="mt-1"
-                {...register('transfer_no', { required: true })}
+                {...register('transfer_no', { required: false })}
               />
             </Label>
             <Label>
@@ -206,6 +207,13 @@ function CreateShipment() {
                 }}
               />
             </div>
+          </Label>
+          <Label>
+            <span>Note</span>
+            <Textarea
+              className="mt-1"
+              {...register('note', { required: true })}
+            />
           </Label>
           <div className="flex justify-between mt-5">
             <div>

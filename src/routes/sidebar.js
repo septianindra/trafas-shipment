@@ -1,5 +1,15 @@
 const roles = [
   {
+    role: 'showing',
+    routes: [
+      {
+        path: '/dashboard',
+        icon: 'HomeIcon',
+        name: 'Dashboard',
+      },
+    ],
+  },
+  {
     role: 'admin',
     routes: [
       {
@@ -73,11 +83,6 @@ const roles = [
     role: 'staff-logistic',
     routes: [
       {
-        path: '/dashboard',
-        icon: 'HomeIcon',
-        name: 'Dashboard',
-      },
-      {
         path: '/app/shipment',
         icon: 'MailIcon',
         name: 'Shipment',
@@ -88,11 +93,6 @@ const roles = [
     role: 'staff-courier',
     routes: [
       {
-        path: '/dashboard',
-        icon: 'HomeIcon',
-        name: 'Dashboard',
-      },
-      {
         path: '/app/schedule',
         icon: 'GithubIcon',
         name: 'Courier Schedule',
@@ -102,11 +102,6 @@ const roles = [
   {
     role: 'staff-marketing',
     routes: [
-      {
-        path: '/dashboard',
-        icon: 'HomeIcon',
-        name: 'Dashboard',
-      },
       {
         path: '/app/shipment',
         icon: 'MailIcon',

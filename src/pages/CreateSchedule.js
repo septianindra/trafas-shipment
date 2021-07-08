@@ -16,13 +16,30 @@ import { fetchEmployee } from '../app/employeesSlice'
 import { data } from 'autoprefixer'
 import {
   clearCreateDeliverieStatus,
+  clearDeliverieListStatus,
   createNewDeliverie,
 } from '../app/deliveriesSlice'
-import { clearCreatePickupStatus, createNewPickup } from '../app/pickupsSlice'
+import {
+  clearCreatePickupStatus,
+  clearPickupListStatus,
+  createNewPickup,
+} from '../app/pickupsSlice'
 
 function CreateSchedule() {
-  let { type } = useParams()
   const dispatch = useDispatch()
+  const deliverieListStatus = useSelector(
+    (state) => state.deliveries.deliverieListStatus,
+  )
+
+  useEffect(() => {
+    if (deliverieListStatus === 'succeeded') {
+      dispatch(clearDeliverieListStatus())
+      dispatch(clearPickupListStatus())
+    }
+  }, [deliverieListStatus])
+
+  let { type } = useParams()
+
   const [shipmentStatus, setShipmentStatus] = useState('idle')
   const formType = type
   const shipmentListByStatusCollected = useSelector(
@@ -31,7 +48,9 @@ function CreateSchedule() {
   const shipmentListByStatusDelivering = useSelector(
     (state) => state.shipments.shipmentListByStatusDelivering,
   )
-  const employeeList = useSelector((state) => state.employees.employeeList)
+  const employeeList = useSelector(
+    (state) => state.employees.employeeListByRoleCourier,
+  )
   const employeeListStatus = useSelector(
     (state) => state.employees.employeeListStatus,
   )

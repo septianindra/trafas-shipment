@@ -25,11 +25,30 @@ import {
   fetchDeliverie,
 } from '../app/deliveriesSlice'
 import { clearPickupByIdStatus, fetchPickup } from '../app/pickupsSlice'
+import { fetchShipment } from '../app/shipmentsSlice'
+import { useAuth } from '../contexts/Auth'
 
 function Schedule() {
+  const { user } = useAuth()
   const dispatch = useDispatch()
   const [link, setLink] = useState('delivery')
   const [query, setQuery] = useState('')
+
+  const shipmentListByStatusCollected = useSelector(
+    (state) => state.shipments.shipmentListByStatusCollected,
+  )
+  const shipmentListByStatusDelivering = useSelector(
+    (state) => state.shipments.shipmentListByStatusDelivering,
+  )
+
+  const shipmentListStatus = useSelector(
+    (state) => state.shipments.shipmentListStatus,
+  )
+  useEffect(() => {
+    if (shipmentListStatus === 'idle') {
+      dispatch(fetchShipment())
+    }
+  }, [shipmentListStatus, dispatch])
 
   const deliverieList = useSelector((state) => state.deliveries.deliverieList)
   const deliverieListStatus = useSelector(
@@ -88,9 +107,14 @@ function Schedule() {
       <PageTitle>
         <div className="flex justify-between">
           <div>Courier schedule list</div>
-          <div className="float-right">
-            {link === 'delivery' ? newDeliveryBtn : newPickupBtn}
-          </div>
+          <div>{user.user_metadata.role}</div>
+          {user.user_metadata.role === 'staff-courier' ? (
+            ''
+          ) : (
+            <div className="float-right">
+              {link === 'delivery' ? newDeliveryBtn : newPickupBtn}
+            </div>
+          )}
         </div>
       </PageTitle>
       <SectionTitle>
@@ -99,7 +123,10 @@ function Schedule() {
       <hr className="mb-4" />
       <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-2">
         <div className="cursor-pointer" onClick={() => setLink('delivery')}>
-          <InfoCard title="Delivery" value="3">
+          <InfoCard
+            title="Delivery"
+            value={`${shipmentListByStatusCollected.length} to delivery`}
+          >
             <RoundIcon
               icon={PeopleIcon}
               iconColorClass="text-orange-500 dark:text-orange-100"
@@ -110,7 +137,10 @@ function Schedule() {
         </div>
 
         <div className="cursor-pointer" onClick={() => setLink('pickup')}>
-          <InfoCard title="Pickup" value="2">
+          <InfoCard
+            title="Pickup"
+            value={`${shipmentListByStatusDelivering.length} to pickup`}
+          >
             <RoundIcon
               icon={PeopleIcon}
               iconColorClass="text-green-500 dark:text-green-100"
@@ -192,10 +222,10 @@ function Delivery({ query, response }) {
       <Table className=" w-full">
         <TableHeader>
           <tr>
-            <TableCell>Shipment ID</TableCell>
-            <TableCell>Employee ID</TableCell>
-            <TableCell>Start Date</TableCell>
-            <TableCell>End Date</TableCell>
+            <TableCell>Shipment TO</TableCell>
+            <TableCell>Employee IN CHARGE</TableCell>
+            <TableCell>DEPART </TableCell>
+            <TableCell>RETURNED </TableCell>
             <TableCell className="text-center">Action</TableCell>
           </tr>
         </TableHeader>
@@ -203,10 +233,24 @@ function Delivery({ query, response }) {
           {dataTable.map((data, i) => (
             <TableRow key={i}>
               <TableCell>
-                <span className="text-sm">{data.shipment_id}</span>
+                {data.shipments.status === 'collected' ||
+                data.shipments.status === 'delivering' ? (
+                  <Link
+                    className="py-1 px-4 bg-green-900 rounded-xl"
+                    to={`shipment/detail/${data.shipment_id}`}
+                  >
+                    <span className="text-sm">
+                      {data.shipments.customer_name}
+                    </span>
+                  </Link>
+                ) : (
+                  <span className="text-sm">
+                    {data.shipments.customer_name}
+                  </span>
+                )}
               </TableCell>
               <TableCell>
-                <span className="text-sm">{data.employee_id}</span>
+                <span className="text-sm">{data.employees.name}</span>
               </TableCell>
               <TableCell>
                 <span className="text-sm">{`${new Date(
@@ -227,13 +271,22 @@ function Delivery({ query, response }) {
                   <div className=" space-x-4">
                     <Button
                       tag={Link}
+                      to={`/app/shipment/track-trace/${data.shipment_id}`}
+                      layout="link"
+                      size="icon"
+                      aria-label="Search"
+                    >
+                      <SearchIcon className="w-5 h-5" aria-hidden="true" />
+                    </Button>
+                    {/* <Button
+                      tag={Link}
                       to={`/app/schedule/edit/delivery/${data.id}`}
                       layout="link"
                       size="icon"
                       aria-label="Edit"
                     >
                       <EditIcon className="w-5 h-5" aria-hidden="true" />
-                    </Button>
+                    </Button> */}
                     <Button
                       onClick={() => removeOrganization(data.id)}
                       layout="link"
@@ -309,10 +362,10 @@ function Pickup({ response, query }) {
       <Table className=" w-full">
         <TableHeader>
           <tr>
-            <TableCell>Shipment ID</TableCell>
-            <TableCell>Employee ID</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell>Shipment TO</TableCell>
+            <TableCell>Employee IN CHARGE</TableCell>
+            <TableCell>DEPART </TableCell>
+            <TableCell>RETURNED </TableCell>
             <TableCell className="text-center">Action</TableCell>
           </tr>
         </TableHeader>
@@ -320,23 +373,36 @@ function Pickup({ response, query }) {
           {dataTable.map((data, i) => (
             <TableRow key={i}>
               <TableCell>
-                <span className="text-sm">{data.shipment_id}</span>
+                {data.shipments.status === 'delivered' ? (
+                  <Link
+                    className="py-1 px-4 bg-green-900 rounded-xl"
+                    to={`shipment/detail/${data.shipment_id}`}
+                  >
+                    <span className="text-sm">
+                      {data.shipments.customer_name}
+                    </span>
+                  </Link>
+                ) : (
+                  <span className="text-sm">
+                    {data.shipments.customer_name}
+                  </span>
+                )}
               </TableCell>
               <TableCell>
-                <span className="text-sm">{data.employee_id}</span>
+                <span className="text-sm">{data.employees.name}</span>
               </TableCell>
               <TableCell>
                 <span className="text-sm">{`${new Date(
                   data.start_date,
-                ).toLocaleDateString()} - ${new Date(
-                  data.end_date,
-                ).toLocaleDateString()}`}</span>
+                ).toLocaleDateString()} -  ${new Date(
+                  data.start_time,
+                ).toLocaleTimeString()}`}</span>
               </TableCell>
               <TableCell>
                 <span className="text-sm">{`${new Date(
-                  data.pickup_start_date,
-                ).toLocaleDateString()} ${new Date(
-                  data.pickup_start_time,
+                  data.end_date,
+                ).toLocaleDateString()} -  ${new Date(
+                  data.end_time,
                 ).toLocaleTimeString()}`}</span>
               </TableCell>
               <TableCell>
@@ -344,22 +410,22 @@ function Pickup({ response, query }) {
                   <div className=" space-x-4">
                     <Button
                       tag={Link}
-                      to={`/app/shipment/track-trace/${data.id}`}
+                      to={`/app/shipment/track-trace/${data.shipment_id}`}
                       layout="link"
                       size="icon"
                       aria-label="Search"
                     >
                       <SearchIcon className="w-5 h-5" aria-hidden="true" />
                     </Button>
-                    <Button
+                    {/* <Button
                       tag={Link}
-                      to={`/app/employee/edit/${data.id}`}
+                      to={`/app/schedule/edit/delivery/${data.id}`}
                       layout="link"
                       size="icon"
                       aria-label="Edit"
                     >
                       <EditIcon className="w-5 h-5" aria-hidden="true" />
-                    </Button>
+                    </Button> */}
                     <Button
                       onClick={() => removeOrganization(data.id)}
                       layout="link"

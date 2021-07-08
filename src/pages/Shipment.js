@@ -19,19 +19,24 @@ import {
   clearShipmentByIdStatus,
   deleteShipment,
   fetchShipment,
+  fetchShipmentOrderByCreatedAt,
 } from '../app/shipmentsSlice'
 import Fuse from 'fuse.js'
 import toast, { Toaster } from 'react-hot-toast'
 import { clearShipmentStatusAuditByIdStatus } from '../app/shipmentStatusAuditsSlice'
 import { data } from 'autoprefixer'
+import { useAuth } from '../contexts/Auth'
 
 function Shipment() {
+  const { user } = useAuth()
   const dispatch = useDispatch()
   const [filterKey, setFilterKey] = useState('done')
 
-  let response = useSelector((state) => state.shipments.shipmentList)
-  const shipmentListStatus = useSelector(
-    (state) => state.shipments.shipmentListStatus,
+  let response = useSelector(
+    (state) => state.shipments.shipmentListOrderByCreatedAt,
+  )
+  const shipmentListOrderByCreatedAtStatus = useSelector(
+    (state) => state.shipments.shipmentListOrderByCreatedAtStatus,
   )
   const shipmentByIdStatus = useSelector(
     (state) => state.shipments.shipmentByIdStatus,
@@ -62,10 +67,11 @@ function Shipment() {
   }, [shipmentStatusAuditByIdStatus, dispatch])
 
   useEffect(() => {
-    if (shipmentListStatus === 'idle') {
+    if (shipmentListOrderByCreatedAtStatus === 'idle') {
       dispatch(fetchShipment())
+      dispatch(fetchShipmentOrderByCreatedAt())
     }
-  }, [shipmentListStatus, dispatch])
+  }, [shipmentListOrderByCreatedAtStatus, dispatch])
 
   const [pageTable, setPageTable] = useState(1)
   const [dataTable, setDataTable] = useState([])
@@ -145,9 +151,13 @@ function Shipment() {
         <div className="flex justify-between">
           <div>Shipment list</div>
           <div className="float-right">
-            <Button size="small" tag={Link} to="/app/shipment/new">
-              + new shipment
-            </Button>
+            {user.user_metadata.role === 'staff-logistic' ? (
+              ''
+            ) : (
+              <Button size="small" tag={Link} to="/app/shipment/new">
+                + new shipment
+              </Button>
+            )}
           </div>
         </div>
       </PageTitle>
@@ -184,7 +194,17 @@ function Shipment() {
                 <TableCell>
                   <div className="flex items-center text-sm">
                     <div>
-                      <p className="font-semibold">{data.customer_name}</p>
+                      {data.status === 'confirmed' ||
+                      data.status === 'pickup' ? (
+                        <Link
+                          to={`shipment/detail/${data.id}`}
+                          className="font-semibold text-red-500"
+                        >
+                          {data.customer_name}
+                        </Link>
+                      ) : (
+                        <p className="font-semibold">{data.customer_name}</p>
+                      )}
                       <p className="text-xs text-gray-600 dark:text-gray-400">
                         {data.transfer_no}
                       </p>
@@ -219,23 +239,35 @@ function Shipment() {
                       >
                         <SearchIcon className="w-5 h-5" aria-hidden="true" />
                       </Button>
-                      <Button
-                        tag={Link}
-                        to={`/app/shipment/edit/${data.id}`}
-                        layout="link"
-                        size="icon"
-                        aria-label="Edit"
-                      >
-                        <EditIcon className="w-5 h-5" aria-hidden="true" />
-                      </Button>
-                      <Button
-                        onClick={() => removeOrganization(data.id)}
-                        layout="link"
-                        size="icon"
-                        aria-label="Delete"
-                      >
-                        <TrashIcon className="w-5 h-5" aria-hidden="true" />
-                      </Button>
+                      {user.user_metadata.role === 'staff-marketing' ||
+                      user.user_metadata.role === 'staff-logistic' ? (
+                        ''
+                      ) : (
+                        <Button
+                          tag={Link}
+                          to={`/app/shipment/edit/${data.id}`}
+                          layout="link"
+                          size="icon"
+                          aria-label="Edit"
+                        >
+                          <EditIcon className="w-5 h-5" aria-hidden="true" />
+                        </Button>
+                      )}
+                      {user.user_metadata.role === 'admin-marketing' ||
+                      user.user_metadata.role === 'staff-marketing' ||
+                      user.user_metadata === 'admin-logistic' ||
+                      user.user_metadata === 'staff-marketing' ? (
+                        ''
+                      ) : (
+                        <Button
+                          onClick={() => removeOrganization(data.id)}
+                          layout="link"
+                          size="icon"
+                          aria-label="Delete"
+                        >
+                          <TrashIcon className="w-5 h-5" aria-hidden="true" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </TableCell>

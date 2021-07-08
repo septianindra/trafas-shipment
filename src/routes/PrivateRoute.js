@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/Auth'
 
 export function PrivateRoute({ component: Component, roles, ...rest }) {
   const { user } = useAuth()
+  console.log(user)
   const temp = user.user_metadata.role
 
   return (

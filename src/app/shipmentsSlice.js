@@ -9,12 +9,15 @@ const shipment_date = String(year) + '-' + String(month) + '-' + String(dt)
 
 const initialState = {
   shipmentList: [],
-  shipmentListStatus: 'idle',
-  shipmentListError: null,
   shipmentListByTodayDate: [],
   shipmentListByStatusNotDone: [],
   shipmentListByStatusCollected: [],
   shipmentListByStatusDelivering: [],
+  shipmentListStatus: 'idle',
+  shipmentListError: null,
+  shipmentListOrderByCreatedAt: [],
+  shipmentListOrderByCreatedAtStatus: 'idle',
+  shipmentListOrderByCreatedAtError: null,
   shipmentById: [],
   shipmentByIdStatus: 'idle',
   shipmentByIdError: null,
@@ -36,6 +39,17 @@ export const fetchShipment = createAsyncThunk(
       .from('shipments')
       .select()
       .order('shipment_date', { ascending: true })
+    return response
+  },
+)
+
+export const fetchShipmentOrderByCreatedAt = createAsyncThunk(
+  'shipments/fetchShipmentOrderByCreatedAt',
+  async () => {
+    const response = await supabase
+      .from('shipments')
+      .select()
+      .order('created_at', { ascending: false })
     return response
   },
 )
@@ -142,18 +156,24 @@ const shipmentsSlice = createSlice({
         (data) => data.status !== 'done',
       )
       state.shipmentListByStatusNotDone = filterNotDone
-      let filterTodayShipment = filterNotDone.filter(
+
+      let filterStatusConfirmed = action.payload.data.filter(
+        (data) => data.status === 'confirmed',
+      )
+
+      let filterTodayShipment = filterStatusConfirmed.filter(
         (data) =>
           new Date(String(data.shipment_date)).toDateString() ===
           new Date().toDateString(),
       )
       state.shipmentListByTodayDate = filterTodayShipment
+
       let filterStatusCollected = action.payload.data.filter(
         (data) => data.status === 'collected',
       )
       state.shipmentListByStatusCollected = filterStatusCollected
       let filterStatusDelivering = action.payload.data.filter(
-        (data) => data.status === 'delivering',
+        (data) => data.status === 'delivered',
       )
       state.shipmentListByStatusDelivering = filterStatusDelivering
     },
@@ -161,7 +181,17 @@ const shipmentsSlice = createSlice({
       state.shipmentListStatus = 'failed'
       state.shipmentListError = action.error.message
     },
-
+    [fetchShipmentOrderByCreatedAt.pending]: (state, action) => {
+      state.shipmentListOrderByCreatedAtStatus = 'loading'
+    },
+    [fetchShipmentOrderByCreatedAt.fulfilled]: (state, action) => {
+      state.shipmentListOrderByCreatedAtStatus = 'succeeded'
+      state.shipmentListOrderByCreatedAt = action.payload.data
+    },
+    [fetchShipmentOrderByCreatedAt.rejected]: (state, action) => {
+      state.shipmentListOrderByCreatedAtStatus = 'failed'
+      state.shipmentListOrderByCreatedAtError = action.error.message
+    },
     [fetchShipmentById.pending]: (state) => {
       state.shipmentByIdStatus = 'loading'
     },
@@ -179,6 +209,8 @@ const shipmentsSlice = createSlice({
     [createNewShipment.fulfilled]: (state, action) => {
       state.createShipmentStatus = 'succeeded'
       state.shipmentList = state.shipmentList.concat(action.payload.data[0])
+      state.shipmentListOrderByCreatedAtStatus =
+        state.shipmentListOrderByCreatedAtStatus.concat(action.payload.data[0])
     },
     [createNewShipment.rejected]: (state, action) => {
       state.createShipmentStatus = 'failed'
@@ -194,6 +226,11 @@ const shipmentsSlice = createSlice({
       // eslint-disable-next-line eqeqeq
       const temp = array.filter((element) => element.id != action.payload)
       state.shipmentList = temp
+
+      const array2 = current(state.shipmentListOrderByCreatedAt)
+      // eslint-disable-next-line eqeqeq
+      const temp2 = array2.filter((element) => element.id != action.payload)
+      state.shipmentListOrderByCreatedAt = temp2
     },
     [deleteShipment.rejected]: (state, action) => {
       state.shipmentDeleteStatus = 'failed'

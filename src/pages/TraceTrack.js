@@ -11,7 +11,7 @@ import {
   TableRow,
   TableFooter,
   TableContainer,
-  Button,
+  Label,
   Pagination,
 } from '@windmill/react-ui'
 import { ChecklistIcon } from '../icons'
@@ -25,10 +25,27 @@ import SectionTitle from '../components/Typography/SectionTitle'
 import { fetchShipmentById } from '../app/shipmentsSlice'
 import './pages.css'
 import { fetchShipmentStatusAuditById } from '../app/shipmentStatusAuditsSlice'
+import ReactHtmlParser, {
+  processNodes,
+  convertNodeToElement,
+  htmlparser2,
+} from 'react-html-parser'
 
 function TraceTrack() {
   const dispatch = useDispatch()
   let { id } = useParams()
+
+  const shipmentById = useSelector((state) => state.shipments.shipmentById)
+  const shipmentByIdStatus = useSelector(
+    (state) => state.shipments.shipmentByIdStatus,
+  )
+
+  useEffect(() => {
+    if (shipmentByIdStatus === 'idle') {
+      dispatch(fetchShipmentById(id))
+    }
+  }, [shipmentByIdStatus, dispatch])
+
   const shipmentStatusAuditById = useSelector(
     (state) => state.shipmentStatusAudits.shipmentStatusAuditById,
   )
@@ -138,6 +155,58 @@ function TraceTrack() {
           />
         </TableFooter>
       </TableContainer>
+
+      <div className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
+        <div className="grid gap-6 mt-4 mb-4 md:grid-cols-2 xl:grid-cols-2"></div>
+
+        <div className="grid gap-6 mt-4 mb-4 md:grid-cols-2 xl:grid-cols-2">
+          <Label>
+            <span>Transfer no.:</span>
+            <div className="my-2 p-2 bg-gray-700 text-gray-300">
+              {shipmentById.transfer_no}
+            </div>
+          </Label>
+          <Label>
+            <span>Customer Name</span>
+            <div className="my-2 p-2 bg-gray-700 text-gray-300">
+              {shipmentById.customer_name}
+            </div>
+          </Label>
+
+          <Label className="col-span-2">
+            <span>Address</span>
+            <div className="my-2 p-2 bg-gray-700 text-gray-300">
+              {shipmentById.shipment_address}
+            </div>
+          </Label>
+          <Label>
+            <span>Shipment Date</span>
+            <div className="my-2 p-2 bg-gray-700 text-gray-300">
+              {shipmentById.shipment_date}
+            </div>
+          </Label>
+
+          <Label>
+            <span>Pickup Date</span>
+            <div className="my-2 p-2 bg-gray-700 text-gray-300">
+              {shipmentById.pickup_date}
+            </div>
+          </Label>
+        </div>
+
+        <Label>
+          <span>Product List</span>
+          <div className="my-2 p-2 bg-gray-700 text-gray-300">
+            {ReactHtmlParser(shipmentById.product_list)}
+          </div>
+        </Label>
+        <Label>
+          <span>Note</span>
+          <div className="my-2 p-2 bg-gray-700 text-gray-300">
+            {shipmentById.note}
+          </div>
+        </Label>
+      </div>
     </>
   )
 }
