@@ -109,12 +109,13 @@ const employeesSlice = createSlice({
     [fetchEmployee.fulfilled]: (state, action) => {
       state.employeeListStatus = 'succeeded'
       state.employeeList = action.payload.data
-      let filterCourier = action.payload.data.filter(
-        (data) =>
-          data.role.role === 'staff-courier' ||
-          data.role.role === 'admin-courier',
-      )
-      state.employeeListByRoleCourier = filterCourier
+      // let filterCourier = action.payload.data.filter(
+      //   (data) =>
+      //     data.role.role === 'staff-courier' ||
+      //     data.role.role === 'admin-courier' ||
+      //     '',
+      // )
+      state.employeeListByRoleCourier = action.payload.data
     },
     [fetchEmployee.rejected]: (state, action) => {
       state.employeeListStatus = 'failed'
