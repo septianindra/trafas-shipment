@@ -44,7 +44,7 @@ function Layout() {
                   />
                 ) : null
               })}
-              <Redirect exact from="/app" to="/app/shipment" />
+              <Redirect exact from="/app" to="/app/marketing" />
               <Route component={Page404} />
             </Switch>
           </Suspense>

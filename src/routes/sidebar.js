@@ -1,6 +1,6 @@
 const roles = [
   {
-    role: 'showing',
+    role: 'dashboard',
     routes: [
       {
         path: '/dashboard',
@@ -13,19 +13,19 @@ const roles = [
     role: 'admin',
     routes: [
       {
-        path: '/dashboard',
-        icon: 'HomeIcon',
-        name: 'Dashboard',
+        path: '/app/marketing',
+        icon: 'MarketingIcon',
+        name: 'Marketing',
       },
       {
-        path: '/app/shipment',
-        icon: 'MailIcon',
-        name: 'Shipment',
+        path: '/app/logistic',
+        icon: 'LogisticIcon',
+        name: 'Logistic',
       },
       {
-        path: '/app/schedule',
-        icon: 'GithubIcon',
-        name: 'Courier Schedule',
+        path: '/app/courier',
+        icon: 'CourierIcon',
+        name: 'Courier',
       },
       {
         path: '/app/employee',

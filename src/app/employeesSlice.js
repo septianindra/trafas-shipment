@@ -38,12 +38,15 @@ export const fetchEmployeeById = createAsyncThunk(
 
 export const createNewEmployee = createAsyncThunk(
   'employees/createNewEmployee',
-  async (data) => {
-    const response = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
+  async (newData) => {
+    const { data, error } = await supabase.auth.signUp({
+      email: newData.email,
+      password: newData.password,
     })
-    return response
+    if (error) {
+      alert(error.message)
+    }
+    return data
   },
 )
 

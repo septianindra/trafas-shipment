@@ -1,16 +1,18 @@
 import { configureStore } from '@reduxjs/toolkit'
-import shipmentsReducer from './shipmentsSlice'
 import employeesReducer from './employeesSlice'
-import shipmentStatusAuditsReducer from './shipmentStatusAuditsSlice'
-import deliveriesReducer from './deliveriesSlice'
+import ordersReducer from './ordersSlice'
+import packagesReducer from './packagesSlice'
+import deliverysReducer from './deliveriesSlice'
 import pickupsReducer from './pickupsSlice'
+import returnsReducer from './returnsSlice'
 
 export default configureStore({
   reducer: {
-    shipments: shipmentsReducer,
     employees: employeesReducer,
-    shipmentStatusAudits: shipmentStatusAuditsReducer,
-    deliveries: deliveriesReducer,
+    orders: ordersReducer,
+    packages: packagesReducer,
+    deliverys: deliverysReducer,
     pickups: pickupsReducer,
+    returns: returnsReducer,
   },
 })

@@ -27,6 +27,9 @@ import { ReactComponent as OutlinePersonIcon } from './outlinePerson.svg'
 import { ReactComponent as OutlineCogIcon } from './outlineCog.svg'
 import { ReactComponent as OutlineLogoutIcon } from './outlineLogout.svg'
 import { ReactComponent as ChecklistIcon } from './badge-check.svg'
+import { ReactComponent as MarketingIcon } from './marketing.svg'
+import { ReactComponent as LogisticIcon } from './logistic.svg'
+import { ReactComponent as CourierIcon } from './courier.svg'
 
 export {
   ButtonsIcon,
@@ -58,4 +61,7 @@ export {
   OutlineCogIcon,
   OutlineLogoutIcon,
   ChecklistIcon,
+  MarketingIcon,
+  LogisticIcon,
+  CourierIcon,
 }

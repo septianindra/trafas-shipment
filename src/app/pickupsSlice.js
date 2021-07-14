@@ -20,7 +20,7 @@ const initialState = {
 }
 
 export const fetchPickup = createAsyncThunk('pickups/fetchPickup', async () => {
-  const response = await supabase.from('schedules_pickup').select(`
+  const response = await supabase.from('pickups').select(`
   *,
   employees:employee_id ( name ),
   shipments:shipment_id ( customer_name,status )
@@ -31,10 +31,7 @@ export const fetchPickup = createAsyncThunk('pickups/fetchPickup', async () => {
 export const fetchPickupById = createAsyncThunk(
   'pickups/fetchPickupById',
   async (id) => {
-    const response = await supabase
-      .from('schedules_pickup')
-      .select('*')
-      .eq('id', id)
+    const response = await supabase.from('pickups').select('*').eq('id', id)
     return response
   },
 )
@@ -42,7 +39,7 @@ export const fetchPickupById = createAsyncThunk(
 export const createNewPickup = createAsyncThunk(
   'pickups/createNewPickup',
   async (data) => {
-    const response = await supabase.from('schedules_pickup').insert([data])
+    const response = await supabase.from('pickups').insert([data])
     return response
   },
 )
@@ -50,7 +47,7 @@ export const createNewPickup = createAsyncThunk(
 export const deletePickup = createAsyncThunk(
   'pickups/deletePickup',
   async (id) => {
-    await supabase.from('schedules_pickup').delete().match({ id: id })
+    await supabase.from('pickups').delete().match({ id: id })
     return id
   },
 )
@@ -59,7 +56,7 @@ export const updatePickup = createAsyncThunk(
   'pickups/updatePickup',
   async (updatedData) => {
     const { data, error } = await supabase
-      .from('schedules_pickup')
+      .from('pickups')
       .update({
         shipment_id: updatedData.shipment_id,
         employee_id: updatedData.employee_id,
