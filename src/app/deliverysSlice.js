@@ -3,9 +3,14 @@ import { supabase } from '../supabase'
 
 const initialState = {
   deliveryList: [],
-  deliveryListByRoleCourier: [],
   deliveryListStatus: 'idle',
   deliveryListError: null,
+  deliveryListByEmployeeId: [],
+  deliveryListByEmployeeIdStatus: 'idle',
+  deliveryListByEmployeeIdError: null,
+  deliveryListDeliveryByCreatedAt: [],
+  deliveryListDeliveryByCreatedAtStatus: 'idle',
+  deliveryListDeliveryByCreatedAtError: null,
   deliveryById: [],
   deliveryByIdStatus: 'idle',
   deliveryByIdError: null,
@@ -23,7 +28,20 @@ const initialState = {
 export const fetchDelivery = createAsyncThunk(
   'deliverys/fetchDelivery',
   async () => {
-    const response = await supabase.from('deliverys').select()
+    const response = await supabase
+      .from('deliverys')
+      .select(`*,orders:order_id(*)`)
+    return response
+  },
+)
+
+export const fetchDeliveryByEmployeeId = createAsyncThunk(
+  'deliverys/fetchDeliveryByEmployeeId',
+  async (data) => {
+    const response = await supabase
+      .from('deliverys')
+      .select()
+      .eq('employee_id', data)
     return response
   },
 )
@@ -38,15 +56,18 @@ export const fetchDeliveryById = createAsyncThunk(
 
 export const createNewDelivery = createAsyncThunk(
   'deliverys/createNewDelivery',
-  async (newData) => {
-    const { data, error } = await supabase.auth.signUp({
-      email: newData.email,
-      password: newData.password,
-    })
-    if (error) {
-      alert(error.message)
+  async (data) => {
+    const response = await supabase.from('deliverys').insert([data])
+    if (response.error) {
+      alert(response.error.message)
     }
-    return data
+    const response2 = await supabase
+      .from('packages')
+      .insert([{ delivery_id: response.data[0].id }])
+    if (response2.error) {
+      alert(response2.error.message)
+    }
+    return response
   },
 )
 
@@ -58,20 +79,40 @@ export const deleteDelivery = createAsyncThunk(
   },
 )
 
+export const updateStatusDelivery = createAsyncThunk(
+  'deliverys/updateStatusDelivery',
+  async (updatedData) => {
+    const { data, error } = await supabase
+      .from('deliverys')
+      .update({
+        status: updatedData.status,
+        recipient: updatedData.recipient,
+        phone: updatedData.phone,
+      })
+      .eq('id', updatedData.id)
+    console.log(data)
+    return data
+  },
+)
+
 export const updateDelivery = createAsyncThunk(
   'deliverys/updateDelivery',
   async (updatedData) => {
     const { data, error } = await supabase
       .from('deliverys')
       .update({
-        name: updatedData.name,
+        transfer_no: updatedData.transfer_no,
+        customer_name: updatedData.customer_name,
+        delivery_address: updatedData.delivery_address,
+        delivery_date: updatedData.delivery_date,
+        pickup_date: updatedData.pickup_date,
+        status: updatedData.status,
+        recipient: updatedData.recipient,
         phone: updatedData.phone,
-        role: updatedData.role,
+        product_list: updatedData.product_list,
       })
       .eq('id', updatedData.id)
-    if (error) {
-      alert(error.message)
-    }
+    console.log(data)
     return data
   },
 )
@@ -112,17 +153,22 @@ const deliverysSlice = createSlice({
     [fetchDelivery.fulfilled]: (state, action) => {
       state.deliveryListStatus = 'succeeded'
       state.deliveryList = action.payload.data
-      // let filterCourier = action.payload.data.filter(
-      //   (data) =>
-      //     data.role.role === 'staff-courier' ||
-      //     data.role.role === 'admin-courier' ||
-      //     '',
-      // )
-      state.deliveryListByRoleCourier = action.payload.data
     },
     [fetchDelivery.rejected]: (state, action) => {
       state.deliveryListStatus = 'failed'
       state.deliveryListError = action.error.message
+    },
+
+    [fetchDeliveryByEmployeeId.pending]: (state, action) => {
+      state.deliveryListByEmployeeIdStatus = 'loading'
+    },
+    [fetchDeliveryByEmployeeId.fulfilled]: (state, action) => {
+      state.deliveryListByEmployeeIdStatus = 'succeeded'
+      state.deliveryListByEmployeeId = action.payload.data
+    },
+    [fetchDeliveryByEmployeeId.rejected]: (state, action) => {
+      state.deliveryListByEmployeeIdStatus = 'failed'
+      state.deliveryListByEmployeeIdError = action.error.message
     },
     [fetchDeliveryById.pending]: (state) => {
       state.deliveryByIdStatus = 'loading'
@@ -141,6 +187,10 @@ const deliverysSlice = createSlice({
     [createNewDelivery.fulfilled]: (state, action) => {
       state.createDeliveryStatus = 'succeeded'
       state.deliveryList = state.deliveryList.concat(action.payload.data[0])
+      state.deliveryListDeliveryByCreatedAtStatus =
+        state.deliveryListDeliveryByCreatedAtStatus.concat(
+          action.payload.data[0],
+        )
     },
     [createNewDelivery.rejected]: (state, action) => {
       state.createDeliveryStatus = 'failed'
@@ -156,6 +206,11 @@ const deliverysSlice = createSlice({
       // eslint-disable-next-line eqeqeq
       const temp = array.filter((element) => element.id != action.payload)
       state.deliveryList = temp
+
+      const array2 = current(state.deliveryListDeliveryByCreatedAt)
+      // eslint-disable-next-line eqeqeq
+      const temp2 = array2.filter((element) => element.id != action.payload)
+      state.deliveryListDeliveryByCreatedAt = temp2
     },
     [deleteDelivery.rejected]: (state, action) => {
       state.deliveryDeleteStatus = 'failed'

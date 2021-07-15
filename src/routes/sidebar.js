@@ -38,14 +38,9 @@ const roles = [
     role: 'admin-logistic',
     routes: [
       {
-        path: '/dashboard',
-        icon: 'HomeIcon',
-        name: 'Dashboard',
-      },
-      {
-        path: '/app/shipment',
-        icon: 'MailIcon',
-        name: 'Shipment',
+        path: '/app/logistic',
+        icon: 'LogisticIcon',
+        name: 'Logistic',
       },
     ],
   },
@@ -53,14 +48,9 @@ const roles = [
     role: 'admin-courier',
     routes: [
       {
-        path: '/dashboard',
-        icon: 'HomeIcon',
-        name: 'Dashboard',
-      },
-      {
-        path: '/app/schedule',
-        icon: 'GithubIcon',
-        name: 'Courier Schedule',
+        path: '/app/courier',
+        icon: 'CourierIcon',
+        name: 'Courier',
       },
     ],
   },
@@ -68,14 +58,9 @@ const roles = [
     role: 'admin-marketing',
     routes: [
       {
-        path: '/dashboard',
-        icon: 'HomeIcon',
-        name: 'Dashboard',
-      },
-      {
-        path: '/app/shipment',
-        icon: 'MailIcon',
-        name: 'Shipment',
+        path: '/app/marketing',
+        icon: 'MarketingIcon',
+        name: 'Marketing',
       },
     ],
   },
@@ -83,9 +68,9 @@ const roles = [
     role: 'staff-logistic',
     routes: [
       {
-        path: '/app/shipment',
-        icon: 'MailIcon',
-        name: 'Shipment',
+        path: '/app/logistic',
+        icon: 'LogisticIcon',
+        name: 'Logistic',
       },
     ],
   },
@@ -93,9 +78,9 @@ const roles = [
     role: 'staff-courier',
     routes: [
       {
-        path: '/app/schedule',
-        icon: 'GithubIcon',
-        name: 'Courier Schedule',
+        path: '/app/courier',
+        icon: 'CourierIcon',
+        name: 'Courier',
       },
     ],
   },
@@ -103,9 +88,9 @@ const roles = [
     role: 'staff-marketing',
     routes: [
       {
-        path: '/app/shipment',
-        icon: 'MailIcon',
-        name: 'Shipment',
+        path: '/app/marketing',
+        icon: 'MarketingIcon',
+        name: 'Marketing',
       },
     ],
   },

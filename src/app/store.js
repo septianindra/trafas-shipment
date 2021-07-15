@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import employeesReducer from './employeesSlice'
 import ordersReducer from './ordersSlice'
 import packagesReducer from './packagesSlice'
-import deliverysReducer from './deliveriesSlice'
+import deliverysReducer from './deliverysSlice'
 import pickupsReducer from './pickupsSlice'
 import returnsReducer from './returnsSlice'
 

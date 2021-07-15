@@ -56,7 +56,7 @@ function Marketing() {
         toastOptions={{
           className: '',
           style: {
-            marginTop: '90px',
+            marginTop: '10px',
             marginRight: '40px',
             background: '#363636',
             color: '#fff',
@@ -83,7 +83,7 @@ function Marketing() {
         <div className="flex justify-between">
           <div>Marketing : {user.id}</div>
           <div className="float-right">
-            {user?.user_metadata?.role ?? '' === 'staff-logistic' ? (
+            {user.user_metadata.role === 'staff-logistic' ? (
               ''
             ) : (
               <Button size="small" tag={Link} to="/app/order/new">
@@ -181,6 +181,7 @@ function TableList({ response, orderDeleteStatus, query, user }) {
       <Table className=" w-full">
         <TableHeader>
           <tr>
+            <TableCell>Created by</TableCell>
             <TableCell>Customer</TableCell>
             <TableCell>Address</TableCell>
             <TableCell>Shipment Date</TableCell>
@@ -193,12 +194,15 @@ function TableList({ response, orderDeleteStatus, query, user }) {
           {dataTable.map((data, i) => (
             <TableRow key={i}>
               <TableCell>
+                <span className="text-sm">{data.employees?.name ?? ''}</span>
+              </TableCell>
+              <TableCell>
                 <div className="flex items-center text-sm">
                   <div>
                     {data.status === 'confirmed' || data.status === 'pickup' ? (
                       <Link
                         to={`order/detail/${data.id}`}
-                        className="font-semibold text-red-500"
+                        className="font-semibold text-yellow-500"
                       >
                         {data.customer_name}
                       </Link>

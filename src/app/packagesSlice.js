@@ -3,9 +3,14 @@ import { supabase } from '../supabase'
 
 const initialState = {
   packageList: [],
-  packageListByRoleCourier: [],
   packageListStatus: 'idle',
   packageListError: null,
+  packageListByEmployeeId: [],
+  packageListByEmployeeIdStatus: 'idle',
+  packageListByEmployeeIdError: null,
+  packageListPackageByCreatedAt: [],
+  packageListPackageByCreatedAtStatus: 'idle',
+  packageListPackageByCreatedAtError: null,
   packageById: [],
   packageByIdStatus: 'idle',
   packageByIdError: null,
@@ -23,7 +28,20 @@ const initialState = {
 export const fetchPackage = createAsyncThunk(
   'packages/fetchPackage',
   async () => {
-    const response = await supabase.from('packages').select()
+    const response = await supabase
+      .from('packages')
+      .select(`*,orders:order_id(*)`)
+    return response
+  },
+)
+
+export const fetchPackageByEmployeeId = createAsyncThunk(
+  'packages/fetchPackageByEmployeeId',
+  async (data) => {
+    const response = await supabase
+      .from('packages')
+      .select()
+      .eq('employee_id', data)
     return response
   },
 )
@@ -38,15 +56,18 @@ export const fetchPackageById = createAsyncThunk(
 
 export const createNewPackage = createAsyncThunk(
   'packages/createNewPackage',
-  async (newData) => {
-    const { data, error } = await supabase.auth.signUp({
-      email: newData.email,
-      password: newData.password,
-    })
-    if (error) {
-      alert(error.message)
+  async (data) => {
+    const response = await supabase.from('packages').insert([data])
+    if (response.error) {
+      alert(response.error.message)
     }
-    return data
+    const response2 = await supabase
+      .from('packages')
+      .insert([{ package_id: response.data[0].id }])
+    if (response2.error) {
+      alert(response2.error.message)
+    }
+    return response
   },
 )
 
@@ -58,20 +79,40 @@ export const deletePackage = createAsyncThunk(
   },
 )
 
+export const updateStatusPackage = createAsyncThunk(
+  'packages/updateStatusPackage',
+  async (updatedData) => {
+    const { data, error } = await supabase
+      .from('packages')
+      .update({
+        status: updatedData.status,
+        recipient: updatedData.recipient,
+        phone: updatedData.phone,
+      })
+      .eq('id', updatedData.id)
+    console.log(data)
+    return data
+  },
+)
+
 export const updatePackage = createAsyncThunk(
   'packages/updatePackage',
   async (updatedData) => {
     const { data, error } = await supabase
       .from('packages')
       .update({
-        name: updatedData.name,
+        transfer_no: updatedData.transfer_no,
+        customer_name: updatedData.customer_name,
+        package_address: updatedData.package_address,
+        package_date: updatedData.package_date,
+        pickup_date: updatedData.pickup_date,
+        status: updatedData.status,
+        recipient: updatedData.recipient,
         phone: updatedData.phone,
-        role: updatedData.role,
+        product_list: updatedData.product_list,
       })
       .eq('id', updatedData.id)
-    if (error) {
-      alert(error.message)
-    }
+    console.log(data)
     return data
   },
 )
@@ -112,17 +153,22 @@ const packagesSlice = createSlice({
     [fetchPackage.fulfilled]: (state, action) => {
       state.packageListStatus = 'succeeded'
       state.packageList = action.payload.data
-      // let filterCourier = action.payload.data.filter(
-      //   (data) =>
-      //     data.role.role === 'staff-courier' ||
-      //     data.role.role === 'admin-courier' ||
-      //     '',
-      // )
-      state.packageListByRoleCourier = action.payload.data
     },
     [fetchPackage.rejected]: (state, action) => {
       state.packageListStatus = 'failed'
       state.packageListError = action.error.message
+    },
+
+    [fetchPackageByEmployeeId.pending]: (state, action) => {
+      state.packageListByEmployeeIdStatus = 'loading'
+    },
+    [fetchPackageByEmployeeId.fulfilled]: (state, action) => {
+      state.packageListByEmployeeIdStatus = 'succeeded'
+      state.packageListByEmployeeId = action.payload.data
+    },
+    [fetchPackageByEmployeeId.rejected]: (state, action) => {
+      state.packageListByEmployeeIdStatus = 'failed'
+      state.packageListByEmployeeIdError = action.error.message
     },
     [fetchPackageById.pending]: (state) => {
       state.packageByIdStatus = 'loading'
@@ -141,6 +187,8 @@ const packagesSlice = createSlice({
     [createNewPackage.fulfilled]: (state, action) => {
       state.createPackageStatus = 'succeeded'
       state.packageList = state.packageList.concat(action.payload.data[0])
+      state.packageListPackageByCreatedAtStatus =
+        state.packageListPackageByCreatedAtStatus.concat(action.payload.data[0])
     },
     [createNewPackage.rejected]: (state, action) => {
       state.createPackageStatus = 'failed'
@@ -156,6 +204,11 @@ const packagesSlice = createSlice({
       // eslint-disable-next-line eqeqeq
       const temp = array.filter((element) => element.id != action.payload)
       state.packageList = temp
+
+      const array2 = current(state.packageListPackageByCreatedAt)
+      // eslint-disable-next-line eqeqeq
+      const temp2 = array2.filter((element) => element.id != action.payload)
+      state.packageListPackageByCreatedAt = temp2
     },
     [deletePackage.rejected]: (state, action) => {
       state.packageDeleteStatus = 'failed'

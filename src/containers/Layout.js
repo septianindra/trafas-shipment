@@ -8,10 +8,12 @@ import Main from '../containers/Main'
 import ThemedSuspense from '../components/ThemedSuspense'
 import { SidebarContext } from '../context/SidebarContext'
 import { PrivateRoute } from '../routes/PrivateRoute'
+import { useAuth } from '../contexts/Auth'
 
 const Page404 = lazy(() => import('../pages/404'))
 
 function Layout() {
+  const { user } = useAuth()
   const { isSidebarOpen, closeSidebar } = useContext(SidebarContext)
   let location = useLocation()
 
@@ -44,7 +46,19 @@ function Layout() {
                   />
                 ) : null
               })}
-              <Redirect exact from="/app" to="/app/marketing" />
+              {user?.user_metadata?.role === 'admin-marketing' ||
+              user?.user_metadata?.role === 'staff-marketing' ? (
+                <Redirect exact from="/app" to="/app/marketing" />
+              ) : user?.user_metadata?.role === 'admin-logistic' ||
+                user?.user_metadata?.role === 'staff-logistic' ? (
+                <Redirect exact from="/app" to="/app/logistic" />
+              ) : user?.user_metadata?.role === 'admin-courier' ||
+                user?.user_metadata?.role === 'staff-courier' ? (
+                <Redirect exact from="/app" to="/app/courier" />
+              ) : (
+                <Redirect exact from="/app" to="/app/employee" />
+              )}
+
               <Route component={Page404} />
             </Switch>
           </Suspense>

@@ -3,15 +3,17 @@ import { supabase } from '../supabase'
 
 const initialState = {
   orderList: [],
-  orderListByRoleCourier: [],
   orderListStatus: 'idle',
   orderListError: null,
-  orderById: [],
-  orderByIdStatus: 'idle',
-  orderByIdError: null,
   orderListByEmployeeId: [],
   orderListByEmployeeIdStatus: 'idle',
   orderListByEmployeeIdError: null,
+  orderListOrderByCreatedAt: [],
+  orderListOrderByCreatedAtStatus: 'idle',
+  orderListOrderByCreatedAtError: null,
+  orderById: [],
+  orderByIdStatus: 'idle',
+  orderByIdError: null,
   createOrder: [],
   createOrderStatus: 'idle',
   createOrderError: null,
@@ -24,9 +26,22 @@ const initialState = {
 }
 
 export const fetchOrder = createAsyncThunk('orders/fetchOrder', async () => {
-  const response = await supabase.from('orders').select()
+  const response = await supabase
+    .from('orders')
+    .select(`*,employees:employee_id(name)`)
   return response
 })
+
+export const fetchOrderByEmployeeId = createAsyncThunk(
+  'orders/fetchOrderByEmployeeId',
+  async (data) => {
+    const response = await supabase
+      .from('orders')
+      .select()
+      .eq('employee_id', data)
+    return response
+  },
+)
 
 export const fetchOrderById = createAsyncThunk(
   'orders/fetchOrderById',
@@ -36,21 +51,13 @@ export const fetchOrderById = createAsyncThunk(
   },
 )
 
-export const fetchOrderByEmployeeId = createAsyncThunk(
-  'orders/fetchOrderByEmployeeId',
-  async (id) => {
-    const response = await supabase
-      .from('orders')
-      .select('*')
-      .eq('employee_id', id)
-    return response
-  },
-)
-
 export const createNewOrder = createAsyncThunk(
   'orders/createNewOrder',
   async (data) => {
     const response = await supabase.from('orders').insert([data])
+    if (response.error) {
+      alert(response.error.message)
+    }
     return response
   },
 )
@@ -63,20 +70,40 @@ export const deleteOrder = createAsyncThunk(
   },
 )
 
+export const updateStatusOrder = createAsyncThunk(
+  'orders/updateStatusOrder',
+  async (updatedData) => {
+    const { data, error } = await supabase
+      .from('orders')
+      .update({
+        status: updatedData.status,
+        recipient: updatedData.recipient,
+        phone: updatedData.phone,
+      })
+      .eq('id', updatedData.id)
+    console.log(data)
+    return data
+  },
+)
+
 export const updateOrder = createAsyncThunk(
   'orders/updateOrder',
   async (updatedData) => {
     const { data, error } = await supabase
       .from('orders')
       .update({
-        name: updatedData.name,
+        transfer_no: updatedData.transfer_no,
+        customer_name: updatedData.customer_name,
+        order_address: updatedData.order_address,
+        order_date: updatedData.order_date,
+        pickup_date: updatedData.pickup_date,
+        status: updatedData.status,
+        recipient: updatedData.recipient,
         phone: updatedData.phone,
-        role: updatedData.role,
+        product_list: updatedData.product_list,
       })
       .eq('id', updatedData.id)
-    if (error) {
-      alert(error.message)
-    }
+    console.log(data)
     return data
   },
 )
@@ -117,17 +144,22 @@ const ordersSlice = createSlice({
     [fetchOrder.fulfilled]: (state, action) => {
       state.orderListStatus = 'succeeded'
       state.orderList = action.payload.data
-      // let filterCourier = action.payload.data.filter(
-      //   (data) =>
-      //     data.role.role === 'staff-courier' ||
-      //     data.role.role === 'admin-courier' ||
-      //     '',
-      // )
-      state.orderListByRoleCourier = action.payload.data
     },
     [fetchOrder.rejected]: (state, action) => {
       state.orderListStatus = 'failed'
       state.orderListError = action.error.message
+    },
+
+    [fetchOrderByEmployeeId.pending]: (state, action) => {
+      state.orderListByEmployeeIdStatus = 'loading'
+    },
+    [fetchOrderByEmployeeId.fulfilled]: (state, action) => {
+      state.orderListByEmployeeIdStatus = 'succeeded'
+      state.orderListByEmployeeId = action.payload.data
+    },
+    [fetchOrderByEmployeeId.rejected]: (state, action) => {
+      state.orderListByEmployeeIdStatus = 'failed'
+      state.orderListByEmployeeIdError = action.error.message
     },
     [fetchOrderById.pending]: (state) => {
       state.orderByIdStatus = 'loading'
@@ -140,23 +172,14 @@ const ordersSlice = createSlice({
       state.orderByIdStatus = 'failed'
       state.orderByIdError = action.error.message
     },
-    [fetchOrderByEmployeeId.pending]: (state) => {
-      state.orderListByEmployeeIdStatus = 'loading'
-    },
-    [fetchOrderByEmployeeId.fulfilled]: (state, action) => {
-      state.orderListByEmployeeIdStatus = 'succeeded'
-      state.orderListByEmployeeId = action.payload.data
-    },
-    [fetchOrderByEmployeeId.rejected]: (state, action) => {
-      state.orderListByEmployeeIdStatus = 'failed'
-      state.orderListByEmployeeIdError = action.error.message
-    },
     [createNewOrder.pending]: (state) => {
       state.createOrderStatus = 'loading'
     },
     [createNewOrder.fulfilled]: (state, action) => {
       state.createOrderStatus = 'succeeded'
       state.orderList = state.orderList.concat(action.payload.data[0])
+      state.orderListOrderByCreatedAtStatus =
+        state.orderListOrderByCreatedAtStatus.concat(action.payload.data[0])
     },
     [createNewOrder.rejected]: (state, action) => {
       state.createOrderStatus = 'failed'
@@ -172,6 +195,11 @@ const ordersSlice = createSlice({
       // eslint-disable-next-line eqeqeq
       const temp = array.filter((element) => element.id != action.payload)
       state.orderList = temp
+
+      const array2 = current(state.orderListOrderByCreatedAt)
+      // eslint-disable-next-line eqeqeq
+      const temp2 = array2.filter((element) => element.id != action.payload)
+      state.orderListOrderByCreatedAt = temp2
     },
     [deleteOrder.rejected]: (state, action) => {
       state.orderDeleteStatus = 'failed'

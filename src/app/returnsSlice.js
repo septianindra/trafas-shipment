@@ -5,6 +5,12 @@ const initialState = {
   returnList: [],
   returnListStatus: 'idle',
   returnListError: null,
+  returnListByEmployeeId: [],
+  returnListByEmployeeIdStatus: 'idle',
+  returnListByEmployeeIdError: null,
+  returnListReturnByCreatedAt: [],
+  returnListReturnByCreatedAtStatus: 'idle',
+  returnListReturnByCreatedAtError: null,
   returnById: [],
   returnByIdStatus: 'idle',
   returnByIdError: null,
@@ -20,13 +26,20 @@ const initialState = {
 }
 
 export const fetchReturn = createAsyncThunk('returns/fetchReturn', async () => {
-  const response = await supabase.from('returns').select(`
-  *,
-  employees:employee_id ( name ),
-  shipments:shipment_id ( customer_name,status )
-  `)
+  const response = await supabase.from('returns').select(`*,orders:order_id(*)`)
   return response
 })
+
+export const fetchReturnByEmployeeId = createAsyncThunk(
+  'returns/fetchReturnByEmployeeId',
+  async (data) => {
+    const response = await supabase
+      .from('returns')
+      .select()
+      .eq('employee_id', data)
+    return response
+  },
+)
 
 export const fetchReturnById = createAsyncThunk(
   'returns/fetchReturnById',
@@ -40,6 +53,15 @@ export const createNewReturn = createAsyncThunk(
   'returns/createNewReturn',
   async (data) => {
     const response = await supabase.from('returns').insert([data])
+    if (response.error) {
+      alert(response.error.message)
+    }
+    const response2 = await supabase
+      .from('packages')
+      .insert([{ return_id: response.data[0].id }])
+    if (response2.error) {
+      alert(response2.error.message)
+    }
     return response
   },
 )
@@ -52,20 +74,40 @@ export const deleteReturn = createAsyncThunk(
   },
 )
 
+export const updateStatusReturn = createAsyncThunk(
+  'returns/updateStatusReturn',
+  async (updatedData) => {
+    const { data, error } = await supabase
+      .from('returns')
+      .update({
+        status: updatedData.status,
+        recipient: updatedData.recipient,
+        phone: updatedData.phone,
+      })
+      .eq('id', updatedData.id)
+    console.log(data)
+    return data
+  },
+)
+
 export const updateReturn = createAsyncThunk(
   'returns/updateReturn',
   async (updatedData) => {
     const { data, error } = await supabase
       .from('returns')
       .update({
-        shipment_id: updatedData.shipment_id,
-        employee_id: updatedData.employee_id,
-        start_date: updatedData.start_date,
-        end_date: updatedData.end_date,
-        start_time: updatedData.start_time,
-        end_time: updatedData.end_time,
+        transfer_no: updatedData.transfer_no,
+        customer_name: updatedData.customer_name,
+        return_address: updatedData.return_address,
+        return_date: updatedData.return_date,
+        pickup_date: updatedData.pickup_date,
+        status: updatedData.status,
+        recipient: updatedData.recipient,
+        phone: updatedData.phone,
+        product_list: updatedData.product_list,
       })
       .eq('id', updatedData.id)
+    console.log(data)
     return data
   },
 )
@@ -111,6 +153,18 @@ const returnsSlice = createSlice({
       state.returnListStatus = 'failed'
       state.returnListError = action.error.message
     },
+
+    [fetchReturnByEmployeeId.pending]: (state, action) => {
+      state.returnListByEmployeeIdStatus = 'loading'
+    },
+    [fetchReturnByEmployeeId.fulfilled]: (state, action) => {
+      state.returnListByEmployeeIdStatus = 'succeeded'
+      state.returnListByEmployeeId = action.payload.data
+    },
+    [fetchReturnByEmployeeId.rejected]: (state, action) => {
+      state.returnListByEmployeeIdStatus = 'failed'
+      state.returnListByEmployeeIdError = action.error.message
+    },
     [fetchReturnById.pending]: (state) => {
       state.returnByIdStatus = 'loading'
     },
@@ -128,6 +182,8 @@ const returnsSlice = createSlice({
     [createNewReturn.fulfilled]: (state, action) => {
       state.createReturnStatus = 'succeeded'
       state.returnList = state.returnList.concat(action.payload.data[0])
+      state.returnListReturnByCreatedAtStatus =
+        state.returnListReturnByCreatedAtStatus.concat(action.payload.data[0])
     },
     [createNewReturn.rejected]: (state, action) => {
       state.createReturnStatus = 'failed'
@@ -143,6 +199,11 @@ const returnsSlice = createSlice({
       // eslint-disable-next-line eqeqeq
       const temp = array.filter((element) => element.id != action.payload)
       state.returnList = temp
+
+      const array2 = current(state.returnListReturnByCreatedAt)
+      // eslint-disable-next-line eqeqeq
+      const temp2 = array2.filter((element) => element.id != action.payload)
+      state.returnListReturnByCreatedAt = temp2
     },
     [deleteReturn.rejected]: (state, action) => {
       state.returnDeleteStatus = 'failed'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PageTitle from '../components/Typography/PageTitle'
 import { Input, Textarea, Label, Button } from '@windmill/react-ui'
 import { Link } from 'react-router-dom'
@@ -8,7 +8,13 @@ import { unwrapResult } from '@reduxjs/toolkit'
 import toast, { Toaster } from 'react-hot-toast'
 import { FulfillingBouncingCircleSpinner } from 'react-epic-spinners'
 import { Editor } from '@tinymce/tinymce-react'
-import { clearCreateOrderStatus, createNewOrder } from '../app/ordersSlice'
+import {
+  clearCreateOrderStatus,
+  createNewOrder,
+  clearOrderListStatus,
+} from '../app/ordersSlice'
+import { clearPackageListStatus } from '../app/packagesSlice'
+import { clearDeliveryListStatus } from '../app/deliverysSlice'
 import { useAuth } from '../contexts/Auth'
 
 function CreateOrder() {
@@ -19,6 +25,16 @@ function CreateOrder() {
   const createOrderStatus = useSelector(
     (state) => state.orders.createOrderStatus,
   )
+  const orderListStatus = useSelector((state) => state.orders.orderListStatus)
+
+  useEffect(() => {
+    if (orderListStatus === 'succeeded') {
+      dispatch(clearOrderListStatus())
+      dispatch(clearPackageListStatus())
+      dispatch(clearDeliveryListStatus())
+    }
+  }, [orderListStatus, dispatch])
+
   const canSave = createOrderStatus === 'idle'
 
   const {
