@@ -442,12 +442,12 @@ function TablePickup({ response, packageDeleteStatus, query, user }) {
         </TableHeader>
         <TableBody>
           {dataTable.map((data, i) => {
-            return data.orders.status === 'delivered' ? (
+            return data.orders.status === 'returned' ? (
               <TableRow key={i}>
                 <TableCell>
                   <div className="flex items-center text-sm">
                     <div>
-                      {data.orders.status === 'delivered' ? (
+                      {data.orders.status === 'returned' ? (
                         <Link
                           to={`order/edit/status/${data.orders.id}`}
                           className="font-normal text-yellow-200"

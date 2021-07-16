@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PageTitle from '../components/Typography/PageTitle'
 import { Input, Textarea, Label, Button } from '@windmill/react-ui'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
@@ -20,6 +20,7 @@ import ReactHtmlParser from 'react-html-parser'
 import { useAuth } from '../contexts/Auth'
 
 function EditOrder() {
+  let history = useHistory()
   let { id } = useParams()
   const { user } = useAuth()
   const dispatch = useDispatch()
@@ -74,6 +75,7 @@ function EditOrder() {
         if (error) throw toast.error('Gagal menambahkan data!')
       } finally {
         dispatch(clearOrderUpdateStatus())
+        history.push('/app')
       }
   }
 
