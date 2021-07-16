@@ -136,12 +136,10 @@ function EditOrderStatus() {
       />
       <PageTitle>
         <div className="flex justify-between">
-          <div>Edit Order</div>
+          <div>Update Status</div>
         </div>
       </PageTitle>
-      <SectionTitle>
-        ID #{orderStatusAuditById[0] ? orderStatusAuditById[0].order_id : ''}
-      </SectionTitle>
+      <SectionTitle>ID #{orderById.id}</SectionTitle>
       <hr className="mb-4" />
 
       <Card className="my-5 text-gray-300">
@@ -248,7 +246,7 @@ function EditOrderStatus() {
       <div className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
         <div className="grid gap-6 mt-4 mb-4 md:grid-cols-2 xl:grid-cols-2">
           <Label>
-            <span>Delivery Number</span>
+            <span>SPB Number</span>
             <div className="my-2 p-2 bg-gray-700 text-gray-300">
               {orderById.number ?? '‎‎‏‏‎ ‎'}
             </div>

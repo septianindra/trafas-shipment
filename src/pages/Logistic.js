@@ -247,7 +247,7 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
             <TableCell>Shipment Date</TableCell>
             <TableCell>Prepared By</TableCell>
             <TableCell>Created At</TableCell>
-            <TableCell>Collected At</TableCell>
+            <TableCell>TO COLLECT At</TableCell>
             <TableCell>Status</TableCell>
             <TableCell className="text-center">Action</TableCell>
           </tr>
@@ -422,7 +422,7 @@ function TableReturn({ response, returnDeleteStatus, query, user }) {
             <TableCell>Shipment Date</TableCell>
             <TableCell>Checked By</TableCell>
             <TableCell>Created At</TableCell>
-            <TableCell>Collected At</TableCell>
+            <TableCell>TO CHECK At</TableCell>
             <TableCell>Status</TableCell>
             <TableCell className="text-center">Action</TableCell>
           </tr>

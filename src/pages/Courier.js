@@ -259,9 +259,9 @@ function TableDelivery({ response, packageDeleteStatus, query, user }) {
           <tr>
             <TableCell>Customer </TableCell>
             <TableCell>Shipment Date</TableCell>
-            <TableCell>Prepared By</TableCell>
+            <TableCell>Delivered By</TableCell>
             <TableCell>Created At</TableCell>
-            <TableCell>Collected At</TableCell>
+            <TableCell>To Deliver at</TableCell>
             <TableCell>Status</TableCell>
             <TableCell className="text-center">Action</TableCell>
           </tr>
@@ -433,9 +433,9 @@ function TablePickup({ response, packageDeleteStatus, query, user }) {
           <tr>
             <TableCell>Customer </TableCell>
             <TableCell>Shipment Date</TableCell>
-            <TableCell>Prepared By</TableCell>
+            <TableCell>Picked up By</TableCell>
             <TableCell>Created At</TableCell>
-            <TableCell>Collected At</TableCell>
+            <TableCell>TO PICK UP AT</TableCell>
             <TableCell>Status</TableCell>
             <TableCell className="text-center">Action</TableCell>
           </tr>

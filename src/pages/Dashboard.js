@@ -2,63 +2,43 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Card, CardBody, Pagination, Input } from '@windmill/react-ui'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  clearShipmentByIdStatus,
-  fetchAllShipment,
-  fetchShipment,
-} from '../app/shipmentsSlice'
 import ReactHtmlParser from 'react-html-parser'
 import InfoCard from '../components/Cards/InfoCard'
 import RoundIcon from '../components/RoundIcon'
 import { PeopleIcon, MoneyIcon, SearchIcon } from '../icons'
 import { useAuth } from '../contexts/Auth'
+import { fetchPackage } from '../app/packagesSlice'
+import { fetchDelivery } from '../app/deliverysSlice'
+import { fetchPickup } from '../app/pickupsSlice'
 
 function Dashboard() {
-  // variable -----------------------------------------------------------
   const dispatch = useDispatch()
-  const [filter, SetFilter] = useState('today')
-  const { user } = useAuth()
+  const [filter, setFilter] = useState('package')
   const [query, setQuery] = useState('')
-  const shipmentList = useSelector((state) => state.shipments.shipmentList)
-  const shipmentListByStatusNotDone = useSelector(
-    (state) => state.shipments.shipmentListByStatusNotDone,
+  const packageList = useSelector((state) => state.packages.packageList)
+  const deliveryList = useSelector((state) => state.deliverys.deliveryList)
+  const pickupList = useSelector((state) => state.pickups.pickupList)
+  const packageListStatus = useSelector(
+    (state) => state.packages.packageListStatus,
   )
-  const shipmentListByTodayDate = useSelector(
-    (state) => state.shipments.shipmentListByTodayDate,
-  )
-  const shipmentListByStatusCollected = useSelector(
-    (state) => state.shipments.shipmentListByStatusCollected,
-  )
-  const shipmentListByStatusDelivering = useSelector(
-    (state) => state.shipments.shipmentListByStatusDelivering,
-  )
-  //---------------------------------------------------------------------
-
-  // fetch all shipment---------------------------
-  const shipmentListStatus = useSelector(
-    (state) => state.shipments.shipmentListStatus,
-  )
+  const datenow = new Date().toDateString()
+  // console.log(datenow)
+  // console.log(
+  //   new Date(packageList[4].orders.delivery_date).toDateString() === datenow,
+  // )
   useEffect(() => {
-    if (shipmentListStatus === 'idle') {
-      dispatch(fetchShipment())
+    if (packageListStatus === 'idle') {
+      dispatch(fetchPackage())
+      dispatch(fetchDelivery())
+      dispatch(fetchPickup())
     }
-  }, [shipmentListStatus, dispatch])
-  //----------------------------------------------
-
-  // clear shipment by id filter -----------------
-  const shipmentByIdStatus = useSelector(
-    (state) => state.shipments.shipmentByIdStatus,
-  )
-  useEffect(() => {
-    if (shipmentByIdStatus === 'succeeded') {
-      dispatch(clearShipmentByIdStatus())
-    }
-  }, [shipmentByIdStatus, dispatch])
-  //----------------------------------------------
+  }, [packageListStatus, dispatch])
 
   useEffect(() => {
     const interval = setInterval(() => {
-      dispatch(fetchShipment())
+      dispatch(fetchPackage())
+      dispatch(fetchDelivery())
+      dispatch(fetchPickup())
     }, 1500)
     return () => clearInterval(interval)
   }, [])
@@ -88,16 +68,13 @@ function Dashboard() {
       <div className="grid px-8 py-4 gap-6 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4">
         <div
           className={
-            filter === 'today'
+            filter === 'package'
               ? 'cursor-pointer p-1  bg-gray-600 rounded-lg'
               : 'cursor-pointer'
           }
-          onClick={() => SetFilter('today')}
+          onClick={() => setFilter('package')}
         >
-          <InfoCard
-            title="Today Shipment"
-            value={shipmentListByTodayDate.length}
-          >
+          <InfoCard title="to Prepare" value="">
             <RoundIcon
               icon={PeopleIcon}
               iconColorClass="text-red-500 dark:text-red-100"
@@ -109,16 +86,13 @@ function Dashboard() {
 
         <div
           className={
-            filter === 'active'
+            filter === 'delivery'
               ? 'cursor-pointer p-1  bg-gray-600 rounded-lg'
               : 'cursor-pointer'
           }
-          onClick={() => SetFilter('active')}
+          onClick={() => setFilter('delivery')}
         >
-          <InfoCard
-            title="Active Shipment"
-            value={shipmentListByStatusNotDone.length}
-          >
+          <InfoCard title="to Deliver" value="">
             <RoundIcon
               icon={MoneyIcon}
               iconColorClass="text-blue-500 dark:text-blue-100"
@@ -130,16 +104,13 @@ function Dashboard() {
 
         <div
           className={
-            filter === 'delivery'
+            filter === 'pickup'
               ? 'cursor-pointer p-1  bg-gray-600 rounded-lg'
               : 'cursor-pointer'
           }
-          onClick={() => SetFilter('delivery')}
+          onClick={() => setFilter('pickup')}
         >
-          <InfoCard
-            title="Delivery"
-            value={shipmentListByStatusCollected.length}
-          >
+          <InfoCard title="to Pickup" value="">
             <RoundIcon
               icon={MoneyIcon}
               iconColorClass="text-yellow-500 dark:text-yellow-100"
@@ -148,273 +119,138 @@ function Dashboard() {
             />
           </InfoCard>
         </div>
-
-        <div
-          className={
-            filter === 'pickup'
-              ? 'cursor-pointer p-1  bg-gray-600 rounded-lg'
-              : 'cursor-pointer'
-          }
-          onClick={() => SetFilter('pickup')}
-        >
-          <InfoCard
-            title="Pickup"
-            value={shipmentListByStatusDelivering.length}
-          >
-            <RoundIcon
-              icon={MoneyIcon}
-              iconColorClass="text-green-500 dark:text-green-100"
-              bgColorClass="bg-green-100 dark:bg-green-500"
-              className="mr-4"
-            />
-          </InfoCard>
-        </div>
       </div>
 
-      <div className="px-8 mb-4">
+      <div className="px-8">
         <span className="text-lg">Shipment list</span>
       </div>
 
-      {filter === 'today' ? (
-        <TodayShipment response={shipmentListByTodayDate} />
-      ) : filter === 'active' ? (
-        <ActiveShipment response={shipmentListByStatusNotDone} />
+      {filter === 'package' ? (
+        <PackageCard response={packageList} datenow={datenow} />
       ) : filter === 'delivery' ? (
-        <Delivery response={shipmentListByStatusCollected} />
-      ) : (
-        <Pickup response={shipmentListByStatusDelivering} />
-      )}
+        <DeliveryCard response={deliveryList} />
+      ) : filter === 'pickup' ? (
+        <PickupCard response={pickupList} />
+      ) : null}
     </div>
   )
 }
 
-function TodayShipment({ response }) {
-  const [pageTable, setPageTable] = useState(1)
-  const [dataTable, setDataTable] = useState([])
-  const resultsPerPage = 4
-  const totalResults = response.length
-  function onPageChangeTable(p) {
-    setPageTable(p)
-  }
-  useEffect(() => {
-    setDataTable(
-      response.slice(
-        (pageTable - 1) * resultsPerPage,
-        pageTable * resultsPerPage,
-      ),
-    )
-  }, [response, pageTable])
+function PackageCard({ response }) {
   return (
     <>
-      <div className="overflow-auto h-2/3">
-        <div className="grid gap-3 px-8 md:grid-cols-2 xl:grid-cols-4">
-          {dataTable.map((data, i) => (
-            <Link to={`app/shipment/detail/${data.id}`}>
-              <Card className="border border-white shadow-md">
-                <div className=" flex justify-between pt-4 pb-2 px-3">
-                  <span className="text-sm">{data.customer_name}</span>
-                  <span className="text-sm">
-                    {new Date(data.shipment_date).toLocaleString()}
-                  </span>
-                </div>
-                <div className=" flex justify-between px-3 pb-4">
-                  <span className="text-sm ">
-                    <span className="text-sm">{data.company_name}</span>
-                  </span>
-                </div>
-                <hr />
-                <CardBody>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {ReactHtmlParser(data.product_list)}
-                  </p>
-                </CardBody>
-              </Card>
-            </Link>
-          ))}
+      <div className="overflow-auto">
+        <div className="grid gap-8 p-8 md:grid-cols-1 xl:grid-cols-4">
+          {response.map((data, i) => {
+            return new Date(data.orders.delivery_date).toDateString() ===
+              new Date().toDateString() &&
+              data.orders.status === 'confirmed' ? (
+              <Link to={`app/shipment/detail/${data.id}`}>
+                <Card className="border border-white shadow-md">
+                  <div className=" flex justify-between pt-4 pb-2 px-3">
+                    <span className="text-sm">{data.orders.customer_name}</span>
+                    <span className="text-sm">
+                      {new Date(data.orders.delivery_date).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className=" flex justify-between px-3 pb-4">
+                    <span className="text-sm ">
+                      <span className="text-sm">
+                        {data.orders.customer_address}
+                      </span>
+                    </span>
+                  </div>
+                  <hr />
+                  <CardBody>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {ReactHtmlParser(data.orders.product_list)}
+                    </p>
+                  </CardBody>
+                </Card>
+              </Link>
+            ) : null
+          })}
         </div>
-      </div>
-
-      <div className="px-20 py-2">
-        <Pagination
-          totalResults={totalResults}
-          resultsPerPage={resultsPerPage}
-          onChange={onPageChangeTable}
-          label="Table navigation"
-        />
       </div>
     </>
   )
 }
 
-function ActiveShipment({ response }) {
-  const [pageTable, setPageTable] = useState(1)
-  const [dataTable, setDataTable] = useState([])
-  const resultsPerPage = 4
-  const totalResults = response.length
-  function onPageChangeTable(p) {
-    setPageTable(p)
-  }
-  useEffect(() => {
-    setDataTable(
-      response.slice(
-        (pageTable - 1) * resultsPerPage,
-        pageTable * resultsPerPage,
-      ),
-    )
-  }, [response, pageTable])
+function DeliveryCard({ response }) {
   return (
     <>
-      <div className="overflow-auto h-2/3">
-        <div className="grid gap-3 px-8 md:grid-cols-2 xl:grid-cols-4">
-          {dataTable.map((data, i) => (
-            <Link to={`app/shipment/detail/${data.id}`}>
-              <Card className="border border-white shadow-md">
-                <div className=" flex justify-between pt-4 pb-2 px-3">
-                  <span className="text-sm">{data.customer_name}</span>
-                  <span className="text-sm">
-                    {new Date(data.shipment_date).toLocaleString()}
-                  </span>
-                </div>
-                <div className=" flex justify-between px-3 pb-4">
-                  <span className="text-sm ">
-                    <span className="text-sm">{data.company_name}</span>
-                  </span>
-                </div>
-                <hr />
-                <CardBody>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {ReactHtmlParser(data.product_list)}
-                  </p>
-                </CardBody>
-              </Card>
-            </Link>
-          ))}
+      <div className="overflow-auto">
+        <div className="grid gap-8 p-8 md:grid-cols-1 xl:grid-cols-4">
+          {response.map((data, i) => {
+            return new Date(data.orders.delivery_date).toDateString() ===
+              new Date().toDateString() &&
+              data.orders.status === 'collected' ? (
+              <Link to={`app/shipment/detail/${data.id}`}>
+                <Card className="border border-white shadow-md">
+                  <div className=" flex justify-between pt-4 pb-2 px-3">
+                    <span className="text-sm">{data.orders.customer_name}</span>
+                    <span className="text-sm">
+                      {new Date(data.orders.delivery_date).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className=" flex justify-between px-3 pb-4">
+                    <span className="text-sm ">
+                      <span className="text-sm">
+                        {data.orders.customer_address}
+                      </span>
+                    </span>
+                  </div>
+                  <hr />
+                  <CardBody>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {ReactHtmlParser(data.orders.product_list)}
+                    </p>
+                  </CardBody>
+                </Card>
+              </Link>
+            ) : null
+          })}
         </div>
-      </div>
-
-      <div className="px-20 py-2">
-        <Pagination
-          totalResults={totalResults}
-          resultsPerPage={resultsPerPage}
-          onChange={onPageChangeTable}
-          label="Table navigation"
-        />
       </div>
     </>
   )
 }
 
-function Delivery({ response }) {
-  const [pageTable, setPageTable] = useState(1)
-  const [dataTable, setDataTable] = useState([])
-  const resultsPerPage = 4
-  const totalResults = response.length
-  function onPageChangeTable(p) {
-    setPageTable(p)
-  }
-  useEffect(() => {
-    setDataTable(
-      response.slice(
-        (pageTable - 1) * resultsPerPage,
-        pageTable * resultsPerPage,
-      ),
-    )
-  }, [response, pageTable])
+function PickupCard({ response }) {
   return (
     <>
-      <div className="overflow-auto h-2/3">
-        <div className="grid gap-3 px-8 md:grid-cols-2 xl:grid-cols-4">
-          {dataTable.map((data, i) => (
-            <Link to={`app/shipment/detail/${data.id}`}>
-              <Card className="border border-white shadow-md">
-                <div className=" flex justify-between pt-4 pb-2 px-3">
-                  <span className="text-sm">{data.customer_name}</span>
-                  <span className="text-sm">
-                    {new Date(data.shipment_date).toLocaleString()}
-                  </span>
-                </div>
-                <div className=" flex justify-between px-3 pb-4">
-                  <span className="text-sm ">
-                    <span className="text-sm">{data.company_name}</span>
-                  </span>
-                </div>
-                <hr />
-                <CardBody>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {ReactHtmlParser(data.product_list)}
-                  </p>
-                </CardBody>
-              </Card>
-            </Link>
-          ))}
+      <div className="overflow-auto">
+        <div className="grid gap-8 p-8 md:grid-cols-1 xl:grid-cols-4">
+          {response.map((data, i) => {
+            return new Date(data.orders.delivery_date).toDateString() ===
+              new Date().toDateString() &&
+              data.orders.status === 'delivered' ? (
+              <Link to={`app/shipment/detail/${data.id}`}>
+                <Card className="border border-white shadow-md">
+                  <div className=" flex justify-between pt-4 pb-2 px-3">
+                    <span className="text-sm">{data.orders.customer_name}</span>
+                    <span className="text-sm">
+                      {new Date(data.orders.delivery_date).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className=" flex justify-between px-3 pb-4">
+                    <span className="text-sm ">
+                      <span className="text-sm">
+                        {data.orders.customer_address}
+                      </span>
+                    </span>
+                  </div>
+                  <hr />
+                  <CardBody>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {ReactHtmlParser(data.orders.product_list)}
+                    </p>
+                  </CardBody>
+                </Card>
+              </Link>
+            ) : null
+          })}
         </div>
-      </div>
-
-      <div className="px-20 py-2">
-        <Pagination
-          totalResults={totalResults}
-          resultsPerPage={resultsPerPage}
-          onChange={onPageChangeTable}
-          label="Table navigation"
-        />
-      </div>
-    </>
-  )
-}
-
-function Pickup({ response }) {
-  const [pageTable, setPageTable] = useState(1)
-  const [dataTable, setDataTable] = useState([])
-  const resultsPerPage = 4
-  const totalResults = response.length
-  function onPageChangeTable(p) {
-    setPageTable(p)
-  }
-  useEffect(() => {
-    setDataTable(
-      response.slice(
-        (pageTable - 1) * resultsPerPage,
-        pageTable * resultsPerPage,
-      ),
-    )
-  }, [response, pageTable])
-  return (
-    <>
-      <div className="overflow-auto h-2/3">
-        <div className="grid gap-3 px-8 md:grid-cols-2 xl:grid-cols-4">
-          {dataTable.map((data, i) => (
-            <Link to={`app/shipment/detail/${data.id}`}>
-              <Card className="border border-white shadow-md">
-                <div className=" flex justify-between pt-4 pb-2 px-3">
-                  <span className="text-sm">{data.customer_name}</span>
-                  <span className="text-sm">
-                    {new Date(data.shipment_date).toLocaleString()}
-                  </span>
-                </div>
-                <div className=" flex justify-between px-3 pb-4">
-                  <span className="text-sm ">
-                    <span className="text-sm">{data.company_name}</span>
-                  </span>
-                </div>
-                <hr />
-                <CardBody>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {ReactHtmlParser(data.product_list)}
-                  </p>
-                </CardBody>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      <div className="px-20 py-2">
-        <Pagination
-          totalResults={totalResults}
-          resultsPerPage={resultsPerPage}
-          onChange={onPageChangeTable}
-          label="Table navigation"
-        />
       </div>
     </>
   )

@@ -26,7 +26,9 @@ const initialState = {
 }
 
 export const fetchReturn = createAsyncThunk('returns/fetchReturn', async () => {
-  const response = await supabase.from('returns').select(`*,orders:order_id(*)`)
+  const response = await supabase
+    .from('returns')
+    .select(`*,orders:order_id(*),employees:employee_id(*)`)
   return response
 })
 
@@ -35,7 +37,7 @@ export const fetchReturnByEmployeeId = createAsyncThunk(
   async (data) => {
     const response = await supabase
       .from('returns')
-      .select(`*,orders:order_id(*)`)
+      .select(`*,orders:order_id(*),employees:employee_id(*)`)
       .eq('employee_id', data)
     return response
   },
