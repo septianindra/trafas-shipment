@@ -192,8 +192,39 @@ function EditPackageFrom({
   )
 }
 
-function EditReturnFrom() {
+function EditReturnFrom({ id, employeeListByRoleLogistic }) {
   const dispatch = useDispatch()
+  const returnById = useSelector((state) => state.returns.returnById)
+  const returnByIdStatus = useSelector(
+    (state) => state.returns.returnByIdStatus,
+  )
+  const returnUpdateStatus = useSelector(
+    (state) => state.returns.returnUpdateStatus,
+  )
+
+  useEffect(() => {
+    if (returnByIdStatus === 'idle') {
+      dispatch(fetchReturnById(id))
+    }
+  }, [returnByIdStatus, dispatch])
+
+  const canSave = returnUpdateStatus === 'idle'
+
+  const onSubmit = async (data) => {
+    if (canSave)
+      try {
+        data.id = id
+        const resultAction = await dispatch(updateReturn(data))
+        unwrapResult(resultAction)
+        if (resultAction.payload[0]) {
+          toast.success('Berhasil menambahkan data!')
+        }
+      } catch (error) {
+        if (error) throw toast.error('Gagal menambahkan data!')
+      } finally {
+        dispatch(clearReturnUpdateStatus())
+      }
+  }
 
   const {
     register,
@@ -206,7 +237,54 @@ function EditReturnFrom() {
       employee_id: '',
     },
   })
-  return <form></form>
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Label>
+        <span>Order Id</span>
+        <div className="my-2 p-2 bg-gray-700 text-gray-500">
+          {returnById?.orders?.id ?? ''}
+        </div>
+      </Label>
+      <Label>
+        <span>Customer Name</span>
+        <div className="my-2 p-2 bg-gray-700 text-gray-500">
+          {returnById?.orders?.customer_name ?? ''}
+        </div>
+      </Label>
+      <Label>
+        <span>Address</span>
+        <div className="my-2 p-2 bg-gray-700 text-gray-500">
+          {returnById?.orders?.customer_address ?? ''}
+        </div>
+      </Label>
+      <Label>
+        <span>Order Id</span>
+        <div className="my-2 p-2 bg-gray-700 text-gray-500">
+          {HtmlParser(returnById?.orders?.product_list ?? '')}
+        </div>
+      </Label>
+      <Label>
+        <span>Choose employee</span>
+        <Select className="mt-1" {...register('employee_id')}>
+          <option disabled>select option</option>
+          {employeeListByRoleLogistic.map((data) => {
+            return <option value={data.id}>{data.name}</option>
+          })}
+        </Select>
+      </Label>
+      <div className="mt-4 float-right">
+        {clearReturnUpdateStatus === 'loading' ? (
+          <>
+            <FulfillingBouncingCircleSpinner size="20" />
+          </>
+        ) : (
+          <Button type="submit" size="small">
+            Submit
+          </Button>
+        )}
+      </div>
+    </form>
+  )
 }
 
 export default EditLogistic

@@ -96,15 +96,7 @@ export const updatePickup = createAsyncThunk(
     const { data, error } = await supabase
       .from('pickups')
       .update({
-        transfer_no: updatedData.transfer_no,
-        customer_name: updatedData.customer_name,
-        pickup_address: updatedData.pickup_address,
-        pickup_date: updatedData.pickup_date,
-        pickup_date: updatedData.pickup_date,
-        status: updatedData.status,
-        recipient: updatedData.recipient,
-        phone: updatedData.phone,
-        product_list: updatedData.product_list,
+        employee_id: updatedData.employee_id,
       })
       .eq('id', updatedData.id)
     console.log(data)

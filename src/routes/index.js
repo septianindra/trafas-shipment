@@ -9,6 +9,7 @@ const Marketing = lazy(() => import('../pages/Marketing'))
 const Logistic = lazy(() => import('../pages/Logistic'))
 const EditLogistic = lazy(() => import('../pages/EditLogistic'))
 const Courier = lazy(() => import('../pages/Courier'))
+const EditCourier = lazy(() => import('../pages/EditCourier'))
 const CreateOrder = lazy(() => import('../pages/CreateOrder'))
 const EditOrder = lazy(() => import('../pages/EditOrder'))
 const EditOrderStatus = lazy(() => import('../pages/EditOrderStatus'))
@@ -38,6 +39,11 @@ const routes = [
     path: '/courier',
     component: Courier,
     roles: ['admin', 'admin-courier', 'staff-courier'],
+  },
+  {
+    path: '/courier/edit/:link/:id',
+    component: EditCourier,
+    roles: ['admin', 'admin-logistic'],
   },
   {
     path: '/order/new',

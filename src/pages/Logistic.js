@@ -253,100 +253,104 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
           </tr>
         </TableHeader>
         <TableBody>
-          {dataTable.map((data, i) => (
-            <TableRow key={i}>
-              <TableCell>
-                <div className="flex items-center text-sm">
-                  <div>
-                    {data.orders.status === 'confirmed' ? (
-                      <Link
-                        to={`order/edit/status/${data.orders.id}`}
-                        className="font-normal text-yellow-200"
-                      >
-                        {data.orders.customer_name}
-                      </Link>
-                    ) : (
-                      <p className="font-semibold">
-                        {data.orders.customer_name}
+          {dataTable.map((data, i) => {
+            return data.orders.status === 'confirmed' ? (
+              <TableRow key={i}>
+                <TableCell>
+                  <div className="flex items-center text-sm">
+                    <div>
+                      {data.orders.status === 'confirmed' ? (
+                        <Link
+                          to={`order/edit/status/${data.orders.id}`}
+                          className="font-normal text-yellow-200"
+                        >
+                          {data.orders.customer_name}
+                        </Link>
+                      ) : (
+                        <p className="font-semibold">
+                          {data.orders.customer_name}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        {data.orders.customer_address}
                       </p>
-                    )}
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      {data.orders.customer_address}
-                    </p>
+                    </div>
                   </div>
-                </div>
-              </TableCell>
-              <TableCell>
-                <span className="text-sm">
-                  {new Date(data.orders.delivery_date).toLocaleString()}
-                </span>
-              </TableCell>
-              <TableCell>
-                <span className="text-sm">{data.employees?.name ?? ''}</span>
-              </TableCell>
-              <TableCell>
-                <span className="text-sm">
-                  {new Date(data.created_at).toLocaleString()}
-                </span>
-              </TableCell>
-              <TableCell>
-                <span className="text-sm">
-                  {data.date === null
-                    ? ''
-                    : new Date(data.date).toLocaleString()}
-                </span>
-              </TableCell>
-              <TableCell>
-                <span className="text-sm">{data.orders.status}</span>
-              </TableCell>
-              <TableCell>
-                <div className="flex   justify-center ">
-                  <div className=" space-x-4">
-                    <Button
-                      tag={Link}
-                      to={`/app/order/track-trace/${data.id}`}
-                      layout="link"
-                      size="icon"
-                      aria-label="Search"
-                    >
-                      <SearchIcon className="w-5 h-5" aria-hidden="true" />
-                    </Button>
-                    {user.user_metadata.role === 'staff-marketing' ||
-                    user.user_metadata.role === 'staff-logistic' ? (
-                      ''
-                    ) : (
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">
+                    {new Date(data.orders.delivery_date).toLocaleString()}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">{data.employees?.name ?? ''}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">
+                    {new Date(data.created_at).toLocaleString()}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">
+                    {data.date === null
+                      ? ''
+                      : new Date(data.date).toLocaleString()}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm">{data.orders.status}</span>
+                </TableCell>
+                <TableCell>
+                  <div className="flex   justify-center ">
+                    <div className=" space-x-4">
                       <Button
                         tag={Link}
-                        to={`/app/logistic/edit/package/${data.id}`}
+                        to={`/app/order/track-trace/${data.id}`}
                         layout="link"
                         size="icon"
-                        aria-label="Edit"
+                        aria-label="Search"
                       >
-                        <EditIcon className="w-5 h-5" aria-hidden="true" />
+                        <SearchIcon className="w-5 h-5" aria-hidden="true" />
                       </Button>
-                    )}
-                    {user.user_metadata.role === 'admin-marketing' ||
-                    user.user_metadata.role === 'staff-marketing' ||
-                    user.user_metadata.role === 'admin-logistic' ||
-                    user.user_metadata.role === 'staff-marketing' ||
-                    user.user_metadata.role === 'admin-courier' ||
-                    user.user_metadata.role === 'staff-courier' ? (
-                      ''
-                    ) : (
-                      <Button
-                        onClick={() => removeOrganization(data.id)}
-                        layout="link"
-                        size="icon"
-                        aria-label="Delete"
-                      >
-                        <TrashIcon className="w-5 h-5" aria-hidden="true" />
-                      </Button>
-                    )}
+                      {user.user_metadata.role === 'staff-marketing' ||
+                      user.user_metadata.role === 'staff-logistic' ? (
+                        ''
+                      ) : (
+                        <Button
+                          tag={Link}
+                          to={`/app/logistic/edit/package/${data.id}`}
+                          layout="link"
+                          size="icon"
+                          aria-label="Edit"
+                        >
+                          <EditIcon className="w-5 h-5" aria-hidden="true" />
+                        </Button>
+                      )}
+                      {user.user_metadata.role === 'admin-marketing' ||
+                      user.user_metadata.role === 'staff-marketing' ||
+                      user.user_metadata.role === 'admin-logistic' ||
+                      user.user_metadata.role === 'staff-marketing' ||
+                      user.user_metadata.role === 'admin-courier' ||
+                      user.user_metadata.role === 'staff-courier' ? (
+                        ''
+                      ) : (
+                        <Button
+                          onClick={() => removeOrganization(data.id)}
+                          layout="link"
+                          size="icon"
+                          aria-label="Delete"
+                        >
+                          <TrashIcon className="w-5 h-5" aria-hidden="true" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+              </TableRow>
+            ) : (
+              ''
+            )
+          })}
         </TableBody>
       </Table>
       <TableFooter>
@@ -489,7 +493,7 @@ function TableReturn({ response, returnDeleteStatus, query, user }) {
                       ) : (
                         <Button
                           tag={Link}
-                          to={`/app/logistic/return/edit/${data.id}`}
+                          to={`/app/logistic/edit/return/${data.id}`}
                           layout="link"
                           size="icon"
                           aria-label="Edit"

@@ -155,9 +155,9 @@ function TraceTrack() {
 
         <div className="grid gap-6 mt-4 mb-4 md:grid-cols-2 xl:grid-cols-2">
           <Label>
-            <span>Transfer no.:</span>
+            <span>SPB Number</span>
             <div className="my-2 p-2 bg-gray-700 text-gray-300">
-              {orderById.transfer_no}
+              {orderById.number}
             </div>
           </Label>
           <Label>

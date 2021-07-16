@@ -332,7 +332,7 @@ function TableDelivery({ response, packageDeleteStatus, query, user }) {
                       ) : (
                         <Button
                           tag={Link}
-                          to={`/app/package/edit/${data.id}`}
+                          to={`/app/courier/edit/delivery/${data.id}`}
                           layout="link"
                           size="icon"
                           aria-label="Edit"
@@ -506,7 +506,7 @@ function TablePickup({ response, packageDeleteStatus, query, user }) {
                       ) : (
                         <Button
                           tag={Link}
-                          to={`/app/package/edit/${data.id}`}
+                          to={`/app/courier/edit/pickup/${data.id}`}
                           layout="link"
                           size="icon"
                           aria-label="Edit"
