@@ -35,7 +35,7 @@ export const fetchReturnByEmployeeId = createAsyncThunk(
   async (data) => {
     const response = await supabase
       .from('returns')
-      .select()
+      .select(`*,orders:order_id(*)`)
       .eq('employee_id', data)
     return response
   },
