@@ -4,6 +4,7 @@ import { supabase } from '../supabase'
 const initialState = {
   employeeList: [],
   employeeListByRoleCourier: [],
+  employeeListByRoleLogistic: [],
   employeeListStatus: 'idle',
   employeeListError: null,
   employeeById: [],
@@ -112,13 +113,18 @@ const employeesSlice = createSlice({
     [fetchEmployee.fulfilled]: (state, action) => {
       state.employeeListStatus = 'succeeded'
       state.employeeList = action.payload.data
-      // let filterCourier = action.payload.data.filter(
-      //   (data) =>
-      //     data.role.role === 'staff-courier' ||
-      //     data.role.role === 'admin-courier' ||
-      //     '',
-      // )
-      state.employeeListByRoleCourier = action.payload.data
+      let filterCourier = action.payload.data.filter(
+        (data) =>
+          data.role.role === 'staff-courier' ||
+          data.role.role === 'admin-courier',
+      )
+      let filterLogistic = action.payload.data.filter(
+        (data) =>
+          data.role.role === 'staff-logistic' ||
+          data.role.role === 'admin-logistic',
+      )
+      state.employeeListByRoleCourier = filterCourier
+      state.employeeListByRoleLogistic = filterLogistic
     },
     [fetchEmployee.rejected]: (state, action) => {
       state.employeeListStatus = 'failed'

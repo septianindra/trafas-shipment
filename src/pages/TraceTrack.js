@@ -17,14 +17,14 @@ import {
 import { ChecklistIcon } from '../icons'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  clearShipmentListStatus,
-  deleteShipment,
-  fetchShipment,
-} from '../app/shipmentsSlice'
+  clearOrderListStatus,
+  deleteOrder,
+  fetchOrder,
+} from '../app/ordersSlice'
 import SectionTitle from '../components/Typography/SectionTitle'
-import { fetchShipmentById } from '../app/shipmentsSlice'
+import { fetchOrderById } from '../app/ordersSlice'
 import './pages.css'
-import { fetchShipmentStatusAuditById } from '../app/shipmentStatusAuditsSlice'
+import { fetchOrderStatusAuditById } from '../app/orderStatusAuditsSLice'
 import ReactHtmlParser, {
   processNodes,
   convertNodeToElement,
@@ -35,38 +35,36 @@ function TraceTrack() {
   const dispatch = useDispatch()
   let { id } = useParams()
 
-  const shipmentById = useSelector((state) => state.shipments.shipmentById)
-  const shipmentByIdStatus = useSelector(
-    (state) => state.shipments.shipmentByIdStatus,
-  )
+  const orderById = useSelector((state) => state.orders.orderById)
+  const orderByIdStatus = useSelector((state) => state.orders.orderByIdStatus)
 
   useEffect(() => {
-    if (shipmentByIdStatus === 'idle') {
-      dispatch(fetchShipmentById(id))
+    if (orderByIdStatus === 'idle') {
+      dispatch(fetchOrderById(id))
     }
-  }, [shipmentByIdStatus, dispatch])
+  }, [orderByIdStatus, dispatch])
 
-  const shipmentStatusAuditById = useSelector(
-    (state) => state.shipmentStatusAudits.shipmentStatusAuditById,
+  const orderStatusAuditById = useSelector(
+    (state) => state.orderStatusAudits.orderStatusAuditById,
   )
-  const shipmentStatusAuditByIdStatus = useSelector(
-    (state) => state.shipmentStatusAudits.shipmentStatusAuditByIdStatus,
+  const orderStatusAuditByIdStatus = useSelector(
+    (state) => state.orderStatusAudits.orderStatusAuditByIdStatus,
   )
 
-  const status = ['collected', 'delivering', 'delivered', 'pickup', 'done']
+  const status = ['collected', 'delivered', 'returned', 'done']
 
   useEffect(() => {
-    if (shipmentStatusAuditByIdStatus === 'idle') {
-      dispatch(fetchShipmentStatusAuditById(id))
+    if (orderStatusAuditByIdStatus === 'idle') {
+      dispatch(fetchOrderStatusAuditById(id))
     }
-  }, [shipmentStatusAuditByIdStatus, dispatch])
+  }, [orderStatusAuditByIdStatus, dispatch])
 
   const [pageTable, setPageTable] = useState(1)
 
   const [dataTable, setDataTable] = useState([])
 
   const resultsPerPage = 7
-  const totalResults = shipmentStatusAuditById.length
+  const totalResults = orderStatusAuditById.length
 
   function onPageChangeTable(p) {
     setPageTable(p)
@@ -74,12 +72,12 @@ function TraceTrack() {
 
   useEffect(() => {
     setDataTable(
-      shipmentStatusAuditById.slice(
+      orderStatusAuditById.slice(
         (pageTable - 1) * resultsPerPage,
         pageTable * resultsPerPage,
       ),
     )
-  }, [shipmentStatusAuditById, pageTable])
+  }, [orderStatusAuditById, pageTable])
   return (
     <>
       <PageTitle>
@@ -88,10 +86,7 @@ function TraceTrack() {
         </div>
       </PageTitle>
       <SectionTitle>
-        ID #
-        {shipmentStatusAuditById[0]
-          ? shipmentStatusAuditById[0].shipment_id
-          : ''}
+        ID #{orderStatusAuditById[0] ? orderStatusAuditById[0].order_id : ''}
       </SectionTitle>
       <hr className="mb-4" />
 
@@ -101,7 +96,7 @@ function TraceTrack() {
             {status.map((data) => (
               <div
                 className={
-                  shipmentStatusAuditById.some((e) => e.status === data)
+                  orderStatusAuditById.some((e) => e.status === data)
                     ? 'step active'
                     : 'step'
                 }
@@ -123,7 +118,6 @@ function TraceTrack() {
           <TableHeader>
             <tr>
               <TableCell>Local time</TableCell>
-
               <TableCell>Status</TableCell>
               <TableCell>Description</TableCell>
             </tr>
@@ -163,33 +157,33 @@ function TraceTrack() {
           <Label>
             <span>Transfer no.:</span>
             <div className="my-2 p-2 bg-gray-700 text-gray-300">
-              {shipmentById.transfer_no}
+              {orderById.transfer_no}
             </div>
           </Label>
           <Label>
             <span>Customer Name</span>
             <div className="my-2 p-2 bg-gray-700 text-gray-300">
-              {shipmentById.customer_name}
+              {orderById.customer_name}
             </div>
           </Label>
 
           <Label className="col-span-2">
             <span>Address</span>
             <div className="my-2 p-2 bg-gray-700 text-gray-300">
-              {shipmentById.shipment_address}
+              {orderById.customer_address}
             </div>
           </Label>
           <Label>
-            <span>Shipment Date</span>
+            <span>Delivery Date</span>
             <div className="my-2 p-2 bg-gray-700 text-gray-300">
-              {shipmentById.shipment_date}
+              {orderById.delivery_date}
             </div>
           </Label>
 
           <Label>
             <span>Pickup Date</span>
             <div className="my-2 p-2 bg-gray-700 text-gray-300">
-              {shipmentById.pickup_date}
+              {orderById.pickup_date}
             </div>
           </Label>
         </div>
@@ -197,13 +191,13 @@ function TraceTrack() {
         <Label>
           <span>Product List</span>
           <div className="my-2 p-2 bg-gray-700 text-gray-300">
-            {ReactHtmlParser(shipmentById.product_list)}
+            {ReactHtmlParser(orderById.product_list)}
           </div>
         </Label>
         <Label>
           <span>Note</span>
           <div className="my-2 p-2 bg-gray-700 text-gray-300">
-            {shipmentById.note}
+            {orderById.note}
           </div>
         </Label>
       </div>

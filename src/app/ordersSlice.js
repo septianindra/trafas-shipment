@@ -76,9 +76,10 @@ export const updateStatusOrder = createAsyncThunk(
     const { data, error } = await supabase
       .from('orders')
       .update({
+        number: updatedData.number,
         status: updatedData.status,
-        recipient: updatedData.recipient,
-        phone: updatedData.phone,
+        recipient_name: updatedData.recipient_name,
+        recipient_phone: updatedData.recipient_phone,
       })
       .eq('id', updatedData.id)
     console.log(data)
@@ -92,15 +93,9 @@ export const updateOrder = createAsyncThunk(
     const { data, error } = await supabase
       .from('orders')
       .update({
-        transfer_no: updatedData.transfer_no,
         customer_name: updatedData.customer_name,
-        order_address: updatedData.order_address,
-        order_date: updatedData.order_date,
-        pickup_date: updatedData.pickup_date,
-        status: updatedData.status,
-        recipient: updatedData.recipient,
-        phone: updatedData.phone,
-        product_list: updatedData.product_list,
+        customer_address: updatedData.customer_address,
+        note: updatedData.note,
       })
       .eq('id', updatedData.id)
     console.log(data)
@@ -204,6 +199,17 @@ const ordersSlice = createSlice({
     [deleteOrder.rejected]: (state, action) => {
       state.orderDeleteStatus = 'failed'
       state.orderDeleteError = action.error.message
+    },
+    [updateStatusOrder.pending]: (state) => {
+      state.orderUpdateStatus = 'loading'
+    },
+    [updateStatusOrder.fulfilled]: (state, action) => {
+      state.orderUpdateStatus = 'succeeded'
+      state.orderUpdate = action.payload.data
+    },
+    [updateStatusOrder.rejected]: (state, action) => {
+      state.orderUpdateStatus = 'failed'
+      state.orderUpdateError = action.error.message
     },
     [updateOrder.pending]: (state) => {
       state.orderUpdateStatus = 'loading'

@@ -258,10 +258,9 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
               <TableCell>
                 <div className="flex items-center text-sm">
                   <div>
-                    {data.orders.status === 'confirmed' ||
-                    data.orders.status === 'returned' ? (
+                    {data.orders.status === 'confirmed' ? (
                       <Link
-                        to={`order/detail/${data.orders.id}`}
+                        to={`order/edit/status/${data.orders.id}`}
                         className="font-normal text-yellow-200"
                       >
                         {data.orders.customer_name}
@@ -283,7 +282,7 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
                 </span>
               </TableCell>
               <TableCell>
-                <span className="text-sm">{data.employee_id}</span>
+                <span className="text-sm">{data.employees?.name ?? ''}</span>
               </TableCell>
               <TableCell>
                 <span className="text-sm">
@@ -305,7 +304,7 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
                   <div className=" space-x-4">
                     <Button
                       tag={Link}
-                      to={`/app/package/track-trace/${data.id}`}
+                      to={`/app/order/track-trace/${data.id}`}
                       layout="link"
                       size="icon"
                       aria-label="Search"
@@ -318,7 +317,7 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
                     ) : (
                       <Button
                         tag={Link}
-                        to={`/app/logistic/package/edit/${data.id}`}
+                        to={`/app/logistic/edit/package/${data.id}`}
                         layout="link"
                         size="icon"
                         aria-label="Edit"
@@ -431,10 +430,9 @@ function TableReturn({ response, returnDeleteStatus, query, user }) {
                 <TableCell>
                   <div className="flex items-center text-sm">
                     <div>
-                      {data.orders.status === 'confirmed' ||
-                      data.orders.status === 'returned' ? (
+                      {data.orders.status === 'returned' ? (
                         <Link
-                          to={`order/detail/${data.orders.id}`}
+                          to={`order/edit/status/${data.orders.id}`}
                           className="font-normal text-yellow-200"
                         >
                           {data.orders.customer_name}
@@ -456,7 +454,7 @@ function TableReturn({ response, returnDeleteStatus, query, user }) {
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">{data.employee_id}</span>
+                  <span className="text-sm">{data.employees?.name ?? ''}</span>
                 </TableCell>
                 <TableCell>
                   <span className="text-sm">

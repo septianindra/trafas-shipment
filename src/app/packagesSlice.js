@@ -30,7 +30,7 @@ export const fetchPackage = createAsyncThunk(
   async () => {
     const response = await supabase
       .from('packages')
-      .select(`*,orders:order_id(*)`)
+      .select(`*,orders:order_id(*),employees:employee_id(*)`)
     return response
   },
 )
@@ -49,7 +49,10 @@ export const fetchPackageByEmployeeId = createAsyncThunk(
 export const fetchPackageById = createAsyncThunk(
   'packages/fetchPackageById',
   async (id) => {
-    const response = await supabase.from('packages').select('*').eq('id', id)
+    const response = await supabase
+      .from('packages')
+      .select(`*,orders:order_id(*)`)
+      .eq('id', id)
     return response
   },
 )
@@ -101,15 +104,7 @@ export const updatePackage = createAsyncThunk(
     const { data, error } = await supabase
       .from('packages')
       .update({
-        transfer_no: updatedData.transfer_no,
-        customer_name: updatedData.customer_name,
-        package_address: updatedData.package_address,
-        package_date: updatedData.package_date,
-        pickup_date: updatedData.pickup_date,
-        status: updatedData.status,
-        recipient: updatedData.recipient,
-        phone: updatedData.phone,
-        product_list: updatedData.product_list,
+        employee_id: updatedData.employee_id,
       })
       .eq('id', updatedData.id)
     console.log(data)

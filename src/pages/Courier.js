@@ -273,10 +273,9 @@ function TableDelivery({ response, packageDeleteStatus, query, user }) {
                 <TableCell>
                   <div className="flex items-center text-sm">
                     <div>
-                      {data.orders.status === 'confirmed' ||
-                      data.orders.status === 'returned' ? (
+                      {data.orders.status === 'collected' ? (
                         <Link
-                          to={`order/detail/${data.orders.id}`}
+                          to={`order/edit/status/${data.orders.id}`}
                           className="font-normal text-yellow-200"
                         >
                           {data.orders.customer_name}
@@ -448,10 +447,9 @@ function TablePickup({ response, packageDeleteStatus, query, user }) {
                 <TableCell>
                   <div className="flex items-center text-sm">
                     <div>
-                      {data.orders.status === 'confirmed' ||
-                      data.orders.status === 'returned' ? (
+                      {data.orders.status === 'delivered' ? (
                         <Link
-                          to={`order/detail/${data.orders.id}`}
+                          to={`order/edit/status/${data.orders.id}`}
                           className="font-normal text-yellow-200"
                         >
                           {data.orders.customer_name}

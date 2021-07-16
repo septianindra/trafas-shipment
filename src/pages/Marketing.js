@@ -199,16 +199,7 @@ function TableList({ response, orderDeleteStatus, query, user }) {
               <TableCell>
                 <div className="flex items-center text-sm">
                   <div>
-                    {data.status === 'confirmed' || data.status === 'pickup' ? (
-                      <Link
-                        to={`order/detail/${data.id}`}
-                        className="font-semibold text-yellow-500"
-                      >
-                        {data.customer_name}
-                      </Link>
-                    ) : (
-                      <p className="font-semibold">{data.customer_name}</p>
-                    )}
+                    <p className="font-semibold">{data.customer_name}</p>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
                       {data.number}
                     </p>

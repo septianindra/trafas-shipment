@@ -5,6 +5,7 @@ import packagesReducer from './packagesSlice'
 import deliverysReducer from './deliverysSlice'
 import pickupsReducer from './pickupsSlice'
 import returnsReducer from './returnsSlice'
+import orderStatusAuditsReducer from './orderStatusAuditsSLice'
 
 export default configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export default configureStore({
     deliverys: deliverysReducer,
     pickups: pickupsReducer,
     returns: returnsReducer,
+    orderStatusAudits: orderStatusAuditsReducer,
   },
 })
