@@ -87,6 +87,23 @@ export const updateStatusOrder = createAsyncThunk(
   },
 )
 
+export const updateProductList = createAsyncThunk(
+  'orders/updateProductList',
+  async (updatedData) => {
+    const { data, error } = await supabase
+      .from('orders')
+      .update({
+        product_list: updatedData.product_list,
+      })
+      .eq('id', updatedData.id)
+    if (error) {
+      alert(error.message)
+    }
+
+    return data
+  },
+)
+
 export const updateOrder = createAsyncThunk(
   'orders/updateOrder',
   async (updatedData) => {
@@ -95,6 +112,7 @@ export const updateOrder = createAsyncThunk(
       .update({
         customer_name: updatedData.customer_name,
         customer_address: updatedData.customer_address,
+        product_list: updatedData.product_list,
         note: updatedData.note,
       })
       .eq('id', updatedData.id)
@@ -221,6 +239,16 @@ const ordersSlice = createSlice({
     [updateOrder.rejected]: (state, action) => {
       state.orderUpdateStatus = 'failed'
       state.orderUpdateError = action.error.message
+    },
+
+    [updateProductList.pending]: (state) => {
+      state.orderUpdateStatus = 'loading'
+    },
+    [updateProductList.fulfilled]: (state) => {
+      state.orderUpdateStatus = 'succeeded'
+    },
+    [updateProductList.rejected]: (state) => {
+      state.orderUpdateStatus = 'failed'
     },
   },
 })

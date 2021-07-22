@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import toast, { Toaster } from 'react-hot-toast'
-import { Label, Button, Select } from '@windmill/react-ui'
+import { Label, Button, Select, Input } from '@windmill/react-ui'
 import { FulfillingBouncingCircleSpinner } from 'react-epic-spinners'
 import {
   updatePackage,
@@ -140,6 +140,7 @@ function EditPackageFrom({
   } = useForm({
     defaultValues: {
       employee_id: '',
+      date: '',
     },
   })
   return (
@@ -163,7 +164,7 @@ function EditPackageFrom({
         </div>
       </Label>
       <Label>
-        <span>Order Id</span>
+        <span>Product list</span>
         <div className="my-2 p-2 bg-gray-700 text-gray-500">
           {HtmlParser(packageById?.orders?.product_list ?? '')}
         </div>
@@ -176,6 +177,14 @@ function EditPackageFrom({
             return <option value={data.id}>{data.name}</option>
           })}
         </Select>
+      </Label>
+      <Label>
+        <span>Date</span>
+        <Input
+          type="datetime-local"
+          className="mt-1"
+          {...register('date', { required: true })}
+        />
       </Label>
       <div className="mt-4 float-right">
         {clearPackageUpdateStatus === 'loading' ? (
@@ -235,6 +244,7 @@ function EditReturnFrom({ id, employeeListByRoleLogistic }) {
   } = useForm({
     defaultValues: {
       employee_id: '',
+      date: '',
     },
   })
   return (
@@ -258,7 +268,7 @@ function EditReturnFrom({ id, employeeListByRoleLogistic }) {
         </div>
       </Label>
       <Label>
-        <span>Order Id</span>
+        <span>Product list</span>
         <div className="my-2 p-2 bg-gray-700 text-gray-500">
           {HtmlParser(returnById?.orders?.product_list ?? '')}
         </div>
@@ -271,6 +281,14 @@ function EditReturnFrom({ id, employeeListByRoleLogistic }) {
             return <option value={data.id}>{data.name}</option>
           })}
         </Select>
+      </Label>
+      <Label>
+        <span>Date</span>
+        <Input
+          type="datetime-local"
+          className="mt-1"
+          {...register('date', { required: true })}
+        />
       </Label>
       <div className="mt-4 float-right">
         {clearReturnUpdateStatus === 'loading' ? (

@@ -23,12 +23,24 @@ import {
   deleteOrder,
   clearOrderDeleteStatus,
   fetchOrderByEmployeeId,
+  clearOrderByIdStatus,
 } from '../app/ordersSlice'
+import { clearOrderStatusAuditByIdStatus } from '../app/orderStatusAuditsSLice'
 
 function Marketing() {
+  const dispatch = useDispatch()
+  const orderStatusAuditByIdStatus = useSelector(
+    (state) => state.orderStatusAudits.orderStatusAuditByIdStatus,
+  )
+  useEffect(() => {
+    if (orderStatusAuditByIdStatus === 'succeeded') {
+      dispatch(clearOrderStatusAuditByIdStatus())
+      dispatch(clearOrderByIdStatus())
+    }
+  }, [orderStatusAuditByIdStatus, dispatch])
+
   const { user } = useAuth()
   const temp = user?.user_metadata?.role ?? ''
-  const dispatch = useDispatch()
 
   const orderList = useSelector((state) => state.orders.orderList)
   const orderListByEmployeeId = useSelector(

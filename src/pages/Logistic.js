@@ -13,7 +13,7 @@ import {
   Pagination,
   Input,
 } from '@windmill/react-ui'
-import { EditIcon, TrashIcon, SearchIcon, LogisticIcon } from '../icons'
+import { UserIcon, TrashIcon, SearchIcon, LogisticIcon } from '../icons'
 import InfoCard from '../components/Cards/InfoCard'
 import RoundIcon from '../components/RoundIcon'
 import { useDispatch, useSelector } from 'react-redux'
@@ -27,12 +27,24 @@ import {
   clearPackageDeleteStatus,
 } from '../app/packagesSlice'
 import { fetchReturn, fetchReturnByEmployeeId } from '../app/returnsSlice'
+import { clearOrderStatusAuditByIdStatus } from '../app/orderStatusAuditsSLice'
+import { clearOrderByIdStatus } from '../app/ordersSlice'
 
 function Logistic() {
   const { user } = useAuth()
   const [link, setLink] = useState('prepare')
   const temp = user?.user_metadata?.role ?? ''
   const dispatch = useDispatch()
+
+  const orderStatusAuditByIdStatus = useSelector(
+    (state) => state.orderStatusAudits.orderStatusAuditByIdStatus,
+  )
+  useEffect(() => {
+    if (orderStatusAuditByIdStatus === 'succeeded') {
+      dispatch(clearOrderByIdStatus())
+      dispatch(clearOrderStatusAuditByIdStatus())
+    }
+  }, [orderStatusAuditByIdStatus, dispatch])
 
   const packageList = useSelector((state) => state.packages.packageList)
   const packageListByEmployeeId = useSelector(
@@ -305,7 +317,7 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
                     <div className=" space-x-4">
                       <Button
                         tag={Link}
-                        to={`/app/order/track-trace/${data.id}`}
+                        to={`/app/order/track-trace/${data.orders.id}`}
                         layout="link"
                         size="icon"
                         aria-label="Search"
@@ -323,24 +335,7 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
                           size="icon"
                           aria-label="Edit"
                         >
-                          <EditIcon className="w-5 h-5" aria-hidden="true" />
-                        </Button>
-                      )}
-                      {user.user_metadata.role === 'admin-marketing' ||
-                      user.user_metadata.role === 'staff-marketing' ||
-                      user.user_metadata.role === 'admin-logistic' ||
-                      user.user_metadata.role === 'staff-marketing' ||
-                      user.user_metadata.role === 'admin-courier' ||
-                      user.user_metadata.role === 'staff-courier' ? (
-                        ''
-                      ) : (
-                        <Button
-                          onClick={() => removeOrganization(data.id)}
-                          layout="link"
-                          size="icon"
-                          aria-label="Delete"
-                        >
-                          <TrashIcon className="w-5 h-5" aria-hidden="true" />
+                          <UserIcon className="w-5 h-5" aria-hidden="true" />
                         </Button>
                       )}
                     </div>
@@ -480,7 +475,7 @@ function TableReturn({ response, returnDeleteStatus, query, user }) {
                     <div className=" space-x-4">
                       <Button
                         tag={Link}
-                        to={`/app/order/track-trace/${data.id}`}
+                        to={`/app/order/track-trace/${data.orders.id}`}
                         layout="link"
                         size="icon"
                         aria-label="Search"
@@ -498,24 +493,7 @@ function TableReturn({ response, returnDeleteStatus, query, user }) {
                           size="icon"
                           aria-label="Edit"
                         >
-                          <EditIcon className="w-5 h-5" aria-hidden="true" />
-                        </Button>
-                      )}
-                      {user.user_metadata.role === 'admin-marketing' ||
-                      user.user_metadata.role === 'staff-marketing' ||
-                      user.user_metadata.role === 'admin-logistic' ||
-                      user.user_metadata.role === 'staff-marketing' ||
-                      user.user_metadata.role === 'admin-courier' ||
-                      user.user_metadata.role === 'staff-courier' ? (
-                        ''
-                      ) : (
-                        <Button
-                          onClick={() => removeOrganization(data.id)}
-                          layout="link"
-                          size="icon"
-                          aria-label="Delete"
-                        >
-                          <TrashIcon className="w-5 h-5" aria-hidden="true" />
+                          <UserIcon className="w-5 h-5" aria-hidden="true" />
                         </Button>
                       )}
                     </div>

@@ -46,7 +46,10 @@ export const fetchReturnByEmployeeId = createAsyncThunk(
 export const fetchReturnById = createAsyncThunk(
   'returns/fetchReturnById',
   async (id) => {
-    const response = await supabase.from('returns').select('*').eq('id', id)
+    const response = await supabase
+      .from('returns')
+      .select(`*,orders:order_id(*),employees:employee_id(*)`)
+      .eq('id', id)
     return response
   },
 )
@@ -99,6 +102,7 @@ export const updateReturn = createAsyncThunk(
       .from('returns')
       .update({
         employee_id: updatedData.employee_id,
+        date: updatedData.date,
       })
       .eq('id', updatedData.id)
     console.log(data)

@@ -77,6 +77,16 @@ export const updateEmployee = createAsyncThunk(
   },
 )
 
+export const updatePassword = createAsyncThunk(
+  'employees/updatePassword',
+  async (updatedData) => {
+    const { user, error } = await supabase.auth.update({
+      password: updatedData.password,
+    })
+    return user
+  },
+)
+
 const employeesSlice = createSlice({
   name: 'employees',
   initialState,
@@ -177,6 +187,15 @@ const employeesSlice = createSlice({
     [updateEmployee.rejected]: (state, action) => {
       state.employeeUpdateStatus = 'failed'
       state.employeeUpdateError = action.error.message
+    },
+    [updatePassword.pending]: (state) => {
+      state.employeeUpdateStatus = 'loading'
+    },
+    [updatePassword.fulfilled]: (state, action) => {
+      state.employeeUpdateStatus = 'succeeded'
+    },
+    [updatePassword.rejected]: (state, action) => {
+      state.employeeUpdateStatus = 'failed'
     },
   },
 })

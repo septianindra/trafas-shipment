@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react'
+import { Editor } from '@tinymce/tinymce-react'
 import PageTitle from '../components/Typography/PageTitle'
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
 import { Card, CardBody, Input, Label, Button } from '@windmill/react-ui'
 import { ChecklistIcon } from '../icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
-import { clearOrderUpdateStatus, updateStatusOrder } from '../app/ordersSlice'
+import {
+  clearOrderUpdateStatus,
+  updateOrder,
+  updateProductList,
+  updateStatusOrder,
+} from '../app/ordersSlice'
 import toast, { Toaster } from 'react-hot-toast'
 import SectionTitle from '../components/Typography/SectionTitle'
 import { fetchOrderById, clearOrderByIdStatus } from '../app/ordersSlice'
@@ -19,6 +25,7 @@ import { useForm } from 'react-hook-form'
 import { FulfillingBouncingCircleSpinner } from 'react-epic-spinners'
 
 function EditOrderStatus() {
+  let history = useHistory()
   const dispatch = useDispatch()
   let { id } = useParams()
   const [statusValue, setStatusValue] = useState('')
@@ -31,7 +38,7 @@ function EditOrderStatus() {
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       number: orderById.number,
-      status: statusValue,
+      status: '',
       recipient_name: orderById.recipient_name,
       recipient_phone: orderById.recipient_phone,
     },
@@ -100,6 +107,7 @@ function EditOrderStatus() {
         dispatch(clearOrderUpdateStatus())
         dispatch(clearOrderStatusAuditByIdStatus())
         dispatch(clearOrderByIdStatus())
+        history.push('/app')
       }
   }
 
@@ -144,7 +152,6 @@ function EditOrderStatus() {
 
       <Card className="my-5 text-gray-300">
         <CardBody>
-          <div>{statusValue}</div>
           <div className="track">
             {status.map((data) => (
               <div
@@ -242,8 +249,48 @@ function EditOrderStatus() {
           </CardBody>
         </Card>
       )}
+      <FormEditProductList orderById={orderById} id={id} />
+    </>
+  )
+}
 
-      <div className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
+function FormEditProductList({ orderById, id }) {
+  const dispatch = useDispatch()
+  const history = useHistory()
+  const [product_list, setProduct_list] = useState('')
+
+  const orderUpdateStatus = useSelector(
+    (state) => state.orders.orderUpdateStatus,
+  )
+
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      product_list: orderById.product_list,
+    },
+  })
+
+  const canSave = orderUpdateStatus === 'idle'
+
+  const onSubmit = async (data) => {
+    if (canSave)
+      try {
+        data.id = id
+        data.product_list = product_list
+        const resultAction = await dispatch(updateProductList(data))
+        unwrapResult(resultAction)
+        if (resultAction.payload[0]) {
+          toast.success('Berhasil menambahkan data!')
+        }
+      } catch (error) {
+        if (error) throw toast.error('Gagal menambahkan data!')
+      } finally {
+        dispatch(clearOrderUpdateStatus())
+        history.push('/app')
+      }
+  }
+  return (
+    <div className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-6 mt-4 mb-4 md:grid-cols-2 xl:grid-cols-2">
           <Label>
             <span>SPB Number</span>
@@ -277,11 +324,30 @@ function EditOrderStatus() {
             </div>
           </Label>
         </div>
-
         <Label>
           <span>Product List</span>
-          <div className="my-2 p-2 bg-gray-700 text-gray-300">
-            {ReactHtmlParser(orderById.product_list)}
+          <div className="my-2">
+            <Editor
+              apiKey="53pih1o4nmih8lqfxw6b8v8xk1og6bgrjww43pwbdgsf5668"
+              initialValue={orderById.product_list}
+              onEditorChange={(data) => setProduct_list(data)}
+              init={{
+                height: 500,
+                menubar: false,
+                plugins: [
+                  'advlist autolink lists link image charmap print preview anchor',
+                  'searchreplace visualblocks code fullscreen',
+                  'insertdatetime media table paste code help wordcount',
+                ],
+                toolbar:
+                  'undo redo | formatselect | ' +
+                  'bold italic backcolor | alignleft aligncenter ' +
+                  'alignright alignjustify | bullist numlist outdent indent | ' +
+                  'removeformat | help',
+                content_style:
+                  'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+              }}
+            />
           </div>
         </Label>
         <Label>
@@ -290,8 +356,17 @@ function EditOrderStatus() {
             {orderById.note}
           </div>
         </Label>
-      </div>
-    </>
+        {clearOrderUpdateStatus === 'loading' ? (
+          <>
+            <FulfillingBouncingCircleSpinner size="20" />
+          </>
+        ) : (
+          <Button type="submit" size="small">
+            Submit
+          </Button>
+        )}
+      </form>
+    </div>
   )
 }
 

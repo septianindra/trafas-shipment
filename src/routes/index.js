@@ -13,6 +13,7 @@ const EditCourier = lazy(() => import('../pages/EditCourier'))
 const CreateOrder = lazy(() => import('../pages/CreateOrder'))
 const EditOrder = lazy(() => import('../pages/EditOrder'))
 const EditOrderStatus = lazy(() => import('../pages/EditOrderStatus'))
+const EditProfile = lazy(() => import('../pages/EditProfile'))
 
 const routes = [
   {
@@ -69,6 +70,19 @@ const routes = [
   {
     path: '/order/track-trace/:id',
     component: TrackTrace,
+    roles: [
+      'admin',
+      'admin-logistic',
+      'admin-courier',
+      'admin-marketing',
+      'staff-logistic',
+      'staff-courier',
+      'staff-marketing',
+    ],
+  },
+  {
+    path: '/employee/profile/:id',
+    component: EditProfile,
     roles: [
       'admin',
       'admin-logistic',

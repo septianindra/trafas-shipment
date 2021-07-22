@@ -46,7 +46,10 @@ export const fetchPickupByEmployeeId = createAsyncThunk(
 export const fetchPickupById = createAsyncThunk(
   'pickups/fetchPickupById',
   async (id) => {
-    const response = await supabase.from('pickups').select('*').eq('id', id)
+    const response = await supabase
+      .from('pickups')
+      .select(`*,orders:order_id(*),employees:employee_id(*)`)
+      .eq('id', id)
     return response
   },
 )
@@ -99,6 +102,7 @@ export const updatePickup = createAsyncThunk(
       .from('pickups')
       .update({
         employee_id: updatedData.employee_id,
+        date: updatedData.date,
       })
       .eq('id', updatedData.id)
     console.log(data)

@@ -30,6 +30,7 @@ import { ReactComponent as ChecklistIcon } from './badge-check.svg'
 import { ReactComponent as MarketingIcon } from './marketing.svg'
 import { ReactComponent as LogisticIcon } from './logistic.svg'
 import { ReactComponent as CourierIcon } from './courier.svg'
+import { ReactComponent as UserIcon } from './user.svg'
 
 export {
   ButtonsIcon,
@@ -64,4 +65,5 @@ export {
   MarketingIcon,
   LogisticIcon,
   CourierIcon,
+  UserIcon,
 }

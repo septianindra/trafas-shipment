@@ -119,7 +119,7 @@ function TraceTrack() {
             <tr>
               <TableCell>Local time</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Description</TableCell>
+              <TableCell>Employee on duty</TableCell>
             </tr>
           </TableHeader>
           <TableBody>
@@ -134,7 +134,7 @@ function TraceTrack() {
                   <span className="text-sm">{data.status}</span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">{data.returned_date}</span>
+                  <span className="text-sm">{data.employees.name}</span>
                 </TableCell>
               </TableRow>
             ))}

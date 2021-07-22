@@ -142,29 +142,27 @@ function PackageCard({ response }) {
       <div className="overflow-auto">
         <div className="grid gap-8 p-8 md:grid-cols-1 xl:grid-cols-4">
           {response.map((data, i) => {
-            return new Date(data.orders.delivery_date).toDateString() ===
+            return new Date(data.date).toDateString() ===
               new Date().toDateString() &&
               data.orders.status === 'confirmed' ? (
               <Link to={`app/shipment/detail/${data.id}`}>
                 <Card className="border border-white shadow-md">
                   <div className=" flex justify-between pt-4 pb-2 px-3">
-                    <span className="text-sm">{data.orders.customer_name}</span>
+                    <span className="text-sm">{data.employees.name}</span>
                     <span className="text-sm">
-                      {new Date(data.orders.delivery_date).toLocaleString()}
+                      {new Date(data.date).toLocaleString()}
                     </span>
                   </div>
-                  <div className=" flex justify-between px-3 pb-4">
-                    <span className="text-sm ">
-                      <span className="text-sm">
-                        {data.orders.customer_address}
-                      </span>
-                    </span>
-                  </div>
+
                   <hr />
                   <CardBody>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {ReactHtmlParser(data.orders.product_list)}
-                    </p>
+                    <div className=" flex justify-between px-3 pb-4">
+                      <span className="text-sm ">
+                        <span className="text-sm">
+                          {data.orders.customer_address}
+                        </span>
+                      </span>
+                    </div>
                   </CardBody>
                 </Card>
               </Link>
@@ -182,29 +180,27 @@ function DeliveryCard({ response }) {
       <div className="overflow-auto">
         <div className="grid gap-8 p-8 md:grid-cols-1 xl:grid-cols-4">
           {response.map((data, i) => {
-            return new Date(data.orders.delivery_date).toDateString() ===
+            return new Date(data.date).toDateString() ===
               new Date().toDateString() &&
               data.orders.status === 'collected' ? (
               <Link to={`app/shipment/detail/${data.id}`}>
                 <Card className="border border-white shadow-md">
                   <div className=" flex justify-between pt-4 pb-2 px-3">
-                    <span className="text-sm">{data.orders.customer_name}</span>
+                    <span className="text-sm">{data.employees.name}</span>
                     <span className="text-sm">
-                      {new Date(data.orders.delivery_date).toLocaleString()}
+                      {new Date(data.date).toLocaleString()}
                     </span>
                   </div>
-                  <div className=" flex justify-between px-3 pb-4">
-                    <span className="text-sm ">
-                      <span className="text-sm">
-                        {data.orders.customer_address}
-                      </span>
-                    </span>
-                  </div>
+
                   <hr />
                   <CardBody>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {ReactHtmlParser(data.orders.product_list)}
-                    </p>
+                    <div className=" flex justify-between px-3 pb-4">
+                      <span className="text-sm ">
+                        <span className="text-sm">
+                          {data.orders.customer_address}
+                        </span>
+                      </span>
+                    </div>
                   </CardBody>
                 </Card>
               </Link>
@@ -222,29 +218,27 @@ function PickupCard({ response }) {
       <div className="overflow-auto">
         <div className="grid gap-8 p-8 md:grid-cols-1 xl:grid-cols-4">
           {response.map((data, i) => {
-            return new Date(data.orders.delivery_date).toDateString() ===
+            return new Date(data.date).toDateString() ===
               new Date().toDateString() &&
               data.orders.status === 'delivered' ? (
               <Link to={`app/shipment/detail/${data.id}`}>
                 <Card className="border border-white shadow-md">
                   <div className=" flex justify-between pt-4 pb-2 px-3">
-                    <span className="text-sm">{data.orders.customer_name}</span>
+                    <span className="text-sm">{data.employees.name}</span>
                     <span className="text-sm">
-                      {new Date(data.orders.delivery_date).toLocaleString()}
+                      {new Date(data.date).toLocaleString()}
                     </span>
                   </div>
-                  <div className=" flex justify-between px-3 pb-4">
-                    <span className="text-sm ">
-                      <span className="text-sm">
-                        {data.orders.customer_address}
-                      </span>
-                    </span>
-                  </div>
+
                   <hr />
                   <CardBody>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {ReactHtmlParser(data.orders.product_list)}
-                    </p>
+                    <div className=" flex justify-between px-3 pb-4">
+                      <span className="text-sm ">
+                        <span className="text-sm">
+                          {data.orders.customer_address}
+                        </span>
+                      </span>
+                    </div>
                   </CardBody>
                 </Card>
               </Link>

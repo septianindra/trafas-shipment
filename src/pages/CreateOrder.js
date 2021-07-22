@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PageTitle from '../components/Typography/PageTitle'
-import { Input, Textarea, Label, Button } from '@windmill/react-ui'
+import { Input, Textarea, Label, Button, Select } from '@windmill/react-ui'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'

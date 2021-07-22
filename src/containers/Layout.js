@@ -55,8 +55,10 @@ function Layout() {
               ) : user?.user_metadata?.role === 'admin-courier' ||
                 user?.user_metadata?.role === 'staff-courier' ? (
                 <Redirect exact from="/app" to="/app/courier" />
+              ) : user?.user_metadata?.role === 'admin' ? (
+                <Redirect exact from="/app" to="/app/marketing" />
               ) : (
-                <Redirect exact from="/app" to="/app/employee" />
+                <Redirect exact from="/app" to="/dashboard" />
               )}
 
               <Route component={Page404} />

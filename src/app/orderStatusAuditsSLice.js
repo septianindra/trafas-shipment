@@ -24,8 +24,8 @@ export const fetchOrderStatusAudit = createAsyncThunk(
   async () => {
     const response = await supabase
       .from('order_status_audits')
-      .select()
-      .order('orderStatusAudit_date', { ascending: true })
+      .select(`*,orders:order_id(*),employees:employee_id(*)`)
+      .order('changed_on', { ascending: false })
     return response
   },
 )
@@ -35,8 +35,9 @@ export const fetchOrderStatusAuditById = createAsyncThunk(
   async (id) => {
     const response = await supabase
       .from('order_status_audits')
-      .select('*')
+      .select(`*,orders:order_id(*),employees:employee_id(*)`)
       .eq('order_id', id)
+      .order('changed_on', { ascending: false })
     return response
   },
 )

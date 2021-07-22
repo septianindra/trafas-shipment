@@ -51,7 +51,7 @@ export const fetchPackageById = createAsyncThunk(
   async (id) => {
     const response = await supabase
       .from('packages')
-      .select(`*,orders:order_id(*)`)
+      .select(`*,orders:order_id(*),employees:employee_id(*)`)
       .eq('id', id)
     return response
   },
@@ -105,6 +105,7 @@ export const updatePackage = createAsyncThunk(
       .from('packages')
       .update({
         employee_id: updatedData.employee_id,
+        date: updatedData.date,
       })
       .eq('id', updatedData.id)
     console.log(data)

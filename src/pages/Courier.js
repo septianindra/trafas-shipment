@@ -13,7 +13,7 @@ import {
   Pagination,
   Input,
 } from '@windmill/react-ui'
-import { EditIcon, TrashIcon, SearchIcon, CourierIcon } from '../icons'
+import { UserIcon, TrashIcon, SearchIcon, CourierIcon } from '../icons'
 import InfoCard from '../components/Cards/InfoCard'
 import RoundIcon from '../components/RoundIcon'
 import { useDispatch, useSelector } from 'react-redux'
@@ -32,12 +32,24 @@ import {
   deletePickup,
   clearPickupDeleteStatus,
 } from '../app/pickupsSlice'
+import { clearOrderStatusAuditByIdStatus } from '../app/orderStatusAuditsSLice'
+import { clearOrderByIdStatus } from '../app/ordersSlice'
 
 function Courier() {
   const { user } = useAuth()
   const [link, setLink] = useState('delivery')
   const temp = user?.user_metadata?.role ?? ''
   const dispatch = useDispatch()
+
+  const orderStatusAuditByIdStatus = useSelector(
+    (state) => state.orderStatusAudits.orderStatusAuditByIdStatus,
+  )
+  useEffect(() => {
+    if (orderStatusAuditByIdStatus === 'succeeded') {
+      dispatch(clearOrderStatusAuditByIdStatus())
+      dispatch(clearOrderByIdStatus())
+    }
+  }, [orderStatusAuditByIdStatus, dispatch])
 
   const deliveryList = useSelector((state) => state.deliverys.deliveryList)
   const deliveryListByEmployeeId = useSelector(
@@ -297,7 +309,7 @@ function TableDelivery({ response, packageDeleteStatus, query, user }) {
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">{data.employee_id}</span>
+                  <span className="text-sm">{data?.employees?.name ?? ''}</span>
                 </TableCell>
                 <TableCell>
                   <span className="text-sm">
@@ -319,7 +331,7 @@ function TableDelivery({ response, packageDeleteStatus, query, user }) {
                     <div className=" space-x-4">
                       <Button
                         tag={Link}
-                        to={`/app/package/track-trace/${data.id}`}
+                        to={`/app/order/track-trace/${data.orders.id}`}
                         layout="link"
                         size="icon"
                         aria-label="Search"
@@ -337,24 +349,7 @@ function TableDelivery({ response, packageDeleteStatus, query, user }) {
                           size="icon"
                           aria-label="Edit"
                         >
-                          <EditIcon className="w-5 h-5" aria-hidden="true" />
-                        </Button>
-                      )}
-                      {user.user_metadata.role === 'admin-marketing' ||
-                      user.user_metadata.role === 'staff-marketing' ||
-                      user.user_metadata.role === 'admin-logistic' ||
-                      user.user_metadata.role === 'staff-marketing' ||
-                      user.user_metadata.role === 'admin-courier' ||
-                      user.user_metadata.role === 'staff-courier' ? (
-                        ''
-                      ) : (
-                        <Button
-                          onClick={() => removeOrganization(data.id)}
-                          layout="link"
-                          size="icon"
-                          aria-label="Delete"
-                        >
-                          <TrashIcon className="w-5 h-5" aria-hidden="true" />
+                          <UserIcon className="w-5 h-5" aria-hidden="true" />
                         </Button>
                       )}
                     </div>
@@ -471,7 +466,7 @@ function TablePickup({ response, packageDeleteStatus, query, user }) {
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">{data.employee_id}</span>
+                  <span className="text-sm">{data?.employees?.name ?? ''}</span>
                 </TableCell>
                 <TableCell>
                   <span className="text-sm">
@@ -493,7 +488,7 @@ function TablePickup({ response, packageDeleteStatus, query, user }) {
                     <div className=" space-x-4">
                       <Button
                         tag={Link}
-                        to={`/app/package/track-trace/${data.id}`}
+                        to={`/app/order/track-trace/${data.orders.id}`}
                         layout="link"
                         size="icon"
                         aria-label="Search"
@@ -511,24 +506,7 @@ function TablePickup({ response, packageDeleteStatus, query, user }) {
                           size="icon"
                           aria-label="Edit"
                         >
-                          <EditIcon className="w-5 h-5" aria-hidden="true" />
-                        </Button>
-                      )}
-                      {user.user_metadata.role === 'admin-marketing' ||
-                      user.user_metadata.role === 'staff-marketing' ||
-                      user.user_metadata.role === 'admin-logistic' ||
-                      user.user_metadata.role === 'staff-marketing' ||
-                      user.user_metadata.role === 'admin-courier' ||
-                      user.user_metadata.role === 'staff-courier' ? (
-                        ''
-                      ) : (
-                        <Button
-                          onClick={() => removeOrganization(data.id)}
-                          layout="link"
-                          size="icon"
-                          aria-label="Delete"
-                        >
-                          <TrashIcon className="w-5 h-5" aria-hidden="true" />
+                          <UserIcon className="w-5 h-5" aria-hidden="true" />
                         </Button>
                       )}
                     </div>
