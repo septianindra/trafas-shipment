@@ -8,6 +8,7 @@ import {
 import AccessibleNavigationAnnouncer from './components/AccessibleNavigationAnnouncer'
 import { PrivateRoute } from './routes/PrivateRoute'
 import { AuthProvider } from './contexts/Auth'
+import CreateEmployee from './pages/CreateEmployee'
 
 const Layout = lazy(() => import('./containers/Layout'))
 const Login = lazy(() => import('./pages/Login'))
@@ -23,7 +24,7 @@ function App() {
         <AuthProvider>
           <Switch>
             <Route path="/login" component={Login} />
-            <Route path="/create-account" component={CreateAccount} />
+            <Route path="/create-account" component={CreateEmployee} />
             <Route path="/forgot-password" component={ForgotPassword} />
             <Route path="/dashboard" component={Dashboard} />
 
