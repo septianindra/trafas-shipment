@@ -93,7 +93,7 @@ function Marketing() {
       />
       <PageTitle>
         <div className="flex justify-between">
-          <div>Marketing : {user.id}</div>
+          <div>Marketing</div>
           <div className="float-right">
             {user.user_metadata.role === 'staff-logistic' ? (
               ''

@@ -31,6 +31,8 @@ export const fetchPackage = createAsyncThunk(
     const response = await supabase
       .from('packages')
       .select(`*,orders:order_id(*),employees:employee_id(*)`)
+      .order('created_at', { ascending: false })
+
     return response
   },
 )

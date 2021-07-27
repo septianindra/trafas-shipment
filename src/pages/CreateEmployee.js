@@ -29,15 +29,20 @@ function CreateEmployee() {
     formState: { isSubmitSuccessful },
   } = useForm({
     defaultValues: {
+      name: '',
       email: '',
-      password: 'password',
+      role: '',
+      password: '',
+      phone: '',
     },
   })
 
   const onSubmit = async (data) => {
     if (canSave)
       try {
+        data.role = { role: data.role }
         const resultAction = await dispatch(createNewEmployee(data))
+        console.log(resultAction)
         unwrapResult(resultAction)
         if (resultAction.payload.data) {
           toast.success('Berhasil menambahkan data!')
@@ -52,8 +57,11 @@ function CreateEmployee() {
   React.useEffect(() => {
     if (isSubmitSuccessful) {
       reset({
+        name: '',
         email: '',
-        password: 'password',
+        role: '',
+        password: '',
+        phone: '',
       })
     }
   }, [formState, reset])
@@ -94,6 +102,35 @@ function CreateEmployee() {
       <div className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-6 mt-4 mb-4 md:grid-cols-2 xl:grid-cols-2">
+            <Label>
+              <span>Name</span>
+              <Input
+                className="mt-1"
+                {...register('name', { required: true })}
+              />
+            </Label>
+            <Label>
+              <span>Role</span>
+              <Select
+                className="mt-1"
+                {...register('role', { required: true })}
+              >
+                <option value="admin">Administrator</option>
+                <option value="admin-logistic">Admin Logistic</option>
+                <option value="admin-courier">Admin Courier</option>
+                <option value="admin-marketing">Admin Marketing</option>
+                <option value="staff-logistic">Staff Logistic</option>
+                <option value="staff-courier">Staff Courier</option>
+                <option value="staff-marketing">Staff Marketing</option>
+              </Select>
+            </Label>
+            <Label>
+              <span>Phone</span>
+              <Input
+                className="mt-1"
+                {...register('phone', { required: true })}
+              />
+            </Label>
             <Label>
               <span>Email</span>
               <Input

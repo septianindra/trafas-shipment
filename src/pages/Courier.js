@@ -114,7 +114,7 @@ function Courier() {
       />
       <PageTitle>
         <div className="flex justify-between">
-          <div>Courier : {user.id}</div>
+          <div>Courier</div>
           <div className="float-right">
             {user.user_metadata.role === 'staff-logistic' ? (
               ''

@@ -44,10 +44,13 @@ export const createNewEmployee = createAsyncThunk(
       email: newData.email,
       password: newData.password,
     })
-    if (error) {
-      alert(error.message)
+
+    newData.id = data.user.id
+    const response = await supabase.from('employees').insert([newData])
+    if (response.error) {
+      alert(response.error.message)
     }
-    return data
+    return response
   },
 )
 

@@ -29,6 +29,7 @@ export const fetchOrder = createAsyncThunk('orders/fetchOrder', async () => {
   const response = await supabase
     .from('orders')
     .select(`*,employees:employee_id(name)`)
+    .order('created_at', { ascending: false })
   return response
 })
 

@@ -109,7 +109,7 @@ function Logistic() {
       />
       <PageTitle>
         <div className="flex justify-between">
-          <div>Logistic : {user.id}</div>
+          <div>Logistic </div>
         </div>
       </PageTitle>
       <hr className="mb-4" />
@@ -255,10 +255,12 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
       <Table className=" w-full">
         <TableHeader>
           <tr>
+            <TableCell>Created At</TableCell>
             <TableCell>Customer </TableCell>
             <TableCell>Shipment Date</TableCell>
+            <TableCell>Note</TableCell>
             <TableCell>Prepared By</TableCell>
-            <TableCell>Created At</TableCell>
+
             <TableCell>TO COLLECT At</TableCell>
             <TableCell>Status</TableCell>
             <TableCell className="text-center">Action</TableCell>
@@ -268,6 +270,11 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
           {dataTable.map((data, i) => {
             return data.orders.status === 'confirmed' ? (
               <TableRow key={i}>
+                <TableCell>
+                  <span className="text-sm">
+                    {new Date(data.created_at).toLocaleString()}
+                  </span>
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center text-sm">
                     <div>
@@ -295,13 +302,12 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">{data.employees?.name ?? ''}</span>
+                  <span className="text-sm">{data.orders.note}</span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">
-                    {new Date(data.created_at).toLocaleString()}
-                  </span>
+                  <span className="text-sm">{data.employees?.name ?? ''}</span>
                 </TableCell>
+
                 <TableCell>
                   <span className="text-sm">
                     {data.date === null
