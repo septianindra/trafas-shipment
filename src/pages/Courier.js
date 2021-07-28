@@ -183,7 +183,7 @@ function Courier() {
       </div>
 
       {link === 'delivery' ? (
-        temp === 'admin' || temp === 'admin-logistic' ? (
+        temp === 'admin' || temp === 'admin-courier' ? (
           <TableDelivery
             response={deliveryList}
             deliveryDeleteStatus={deliveryDeleteStatus}
@@ -198,7 +198,7 @@ function Courier() {
             user={user}
           />
         )
-      ) : temp === 'admin' || temp === 'admin-logistic' ? (
+      ) : temp === 'admin' || temp === 'admin-courier' ? (
         <TablePickup
           response={pickupList}
           pickupDeleteStatus={pickupDeleteStatus}

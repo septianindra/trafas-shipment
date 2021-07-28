@@ -30,6 +30,10 @@ import ReactHtmlParser, {
   convertNodeToElement,
   htmlparser2,
 } from 'react-html-parser'
+import { fetchPackage } from '../app/packagesSlice'
+import { fetchDelivery } from '../app/deliverysSlice'
+import { fetchPickup, fetchPickupById } from '../app/pickupsSlice'
+import { fetchReturn } from '../app/returnsSlice'
 
 function TraceTrack() {
   const dispatch = useDispatch()
@@ -37,12 +41,12 @@ function TraceTrack() {
 
   const orderById = useSelector((state) => state.orders.orderById)
   const orderByIdStatus = useSelector((state) => state.orders.orderByIdStatus)
+  const packageById = useSelector((state) => state.packages.packageById)
+  const deliveryById = useSelector((state) => state.deliverys.deliveryById)
+  const pickupById = useSelector((state) => state.pickups.pickupById)
+  const returnById = useSelector((state) => state.returns.returnById)
 
-  useEffect(() => {
-    if (orderByIdStatus === 'idle') {
-      dispatch(fetchOrderById(id))
-    }
-  }, [orderByIdStatus, dispatch])
+  useEffect(() => {})
 
   const orderStatusAuditById = useSelector(
     (state) => state.orderStatusAudits.orderStatusAuditById,
@@ -58,6 +62,12 @@ function TraceTrack() {
       dispatch(fetchOrderStatusAuditById(id))
     }
   }, [orderStatusAuditByIdStatus, dispatch])
+
+  // useEffect(() => {
+  //   if (orderStatusAuditByIdStatus === 'succeeded') {
+  //     dispatch(fetchPickupById(orderStatusAuditByIdStatus.order_id))
+  //   }
+  // }, [orderStatusAuditByIdStatus, dispatch])
 
   const [pageTable, setPageTable] = useState(1)
 
@@ -134,7 +144,7 @@ function TraceTrack() {
                   <span className="text-sm">{data.status}</span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">{data.employees.name}</span>
+                  <span className="text-sm">{JSON.stringify(packageById)}</span>
                 </TableCell>
               </TableRow>
             ))}

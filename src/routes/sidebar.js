@@ -32,6 +32,11 @@ const roles = [
         icon: 'PeopleIcon',
         name: 'Employee',
       },
+      {
+        path: '/app/report',
+        icon: 'ModalsIcon',
+        name: 'Report',
+      },
     ],
   },
   {
