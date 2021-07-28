@@ -7,6 +7,7 @@ import { ChecklistIcon } from '../icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import {
+  clearOrderListStatus,
   clearOrderUpdateStatus,
   updateOrder,
   updateProductList,
@@ -23,6 +24,10 @@ import {
 import ReactHtmlParser from 'react-html-parser'
 import { useForm } from 'react-hook-form'
 import { FulfillingBouncingCircleSpinner } from 'react-epic-spinners'
+import { clearPackageListStatus } from '../app/packagesSlice'
+import { clearDeliveryListStatus } from '../app/deliverysSlice'
+import { clearReturnListStatus } from '../app/returnsSlice'
+import { clearPickupListStatus } from '../app/pickupsSlice'
 
 function EditOrderStatus() {
   let history = useHistory()
@@ -34,6 +39,62 @@ function EditOrderStatus() {
   const orderUpdateStatus = useSelector(
     (state) => state.orders.orderUpdateStatus,
   )
+
+  const packageListStatus = useSelector(
+    (state) => state.packages.packageListStatus,
+  )
+
+  useEffect(() => {
+    if (packageListStatus === 'succeeded') {
+      dispatch(clearOrderListStatus())
+      dispatch(clearPackageListStatus())
+      dispatch(clearReturnListStatus())
+      dispatch(clearDeliveryListStatus())
+      dispatch(clearPickupListStatus())
+    }
+  }, [packageListStatus, dispatch])
+
+  const deliveryListStatus = useSelector(
+    (state) => state.deliverys.deliveryListStatus,
+  )
+
+  useEffect(() => {
+    if (deliveryListStatus === 'succeeded') {
+      dispatch(clearOrderListStatus())
+      dispatch(clearPackageListStatus())
+      dispatch(clearReturnListStatus())
+      dispatch(clearDeliveryListStatus())
+      dispatch(clearPickupListStatus())
+    }
+  }, [deliveryListStatus, dispatch])
+
+  const pickupListStatus = useSelector(
+    (state) => state.pickups.pickupListStatus,
+  )
+
+  useEffect(() => {
+    if (pickupListStatus === 'succeeded') {
+      dispatch(clearOrderListStatus())
+      dispatch(clearPackageListStatus())
+      dispatch(clearReturnListStatus())
+      dispatch(clearDeliveryListStatus())
+      dispatch(clearPickupListStatus())
+    }
+  }, [pickupListStatus, dispatch])
+
+  const returnListStatus = useSelector(
+    (state) => state.returns.returnListStatus,
+  )
+
+  useEffect(() => {
+    if (returnListStatus === 'succeeded') {
+      dispatch(clearOrderListStatus())
+      dispatch(clearPackageListStatus())
+      dispatch(clearReturnListStatus())
+      dispatch(clearDeliveryListStatus())
+      dispatch(clearPickupListStatus())
+    }
+  }, [returnListStatus, dispatch])
 
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {

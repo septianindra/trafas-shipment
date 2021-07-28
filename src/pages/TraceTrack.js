@@ -34,6 +34,7 @@ import { fetchPackage } from '../app/packagesSlice'
 import { fetchDelivery } from '../app/deliverysSlice'
 import { fetchPickup, fetchPickupById } from '../app/pickupsSlice'
 import { fetchReturn } from '../app/returnsSlice'
+import { fetchEmployee } from '../app/employeesSlice'
 
 function TraceTrack() {
   const dispatch = useDispatch()
@@ -45,8 +46,7 @@ function TraceTrack() {
   const deliveryById = useSelector((state) => state.deliverys.deliveryById)
   const pickupById = useSelector((state) => state.pickups.pickupById)
   const returnById = useSelector((state) => state.returns.returnById)
-
-  useEffect(() => {})
+  const employees = useSelector((state) => state.employees.employeeList)
 
   const orderStatusAuditById = useSelector(
     (state) => state.orderStatusAudits.orderStatusAuditById,
@@ -60,14 +60,10 @@ function TraceTrack() {
   useEffect(() => {
     if (orderStatusAuditByIdStatus === 'idle') {
       dispatch(fetchOrderStatusAuditById(id))
+      dispatch(fetchOrderById(id))
+      dispatch(fetchEmployee())
     }
   }, [orderStatusAuditByIdStatus, dispatch])
-
-  // useEffect(() => {
-  //   if (orderStatusAuditByIdStatus === 'succeeded') {
-  //     dispatch(fetchPickupById(orderStatusAuditByIdStatus.order_id))
-  //   }
-  // }, [orderStatusAuditByIdStatus, dispatch])
 
   const [pageTable, setPageTable] = useState(1)
 
@@ -144,7 +140,15 @@ function TraceTrack() {
                   <span className="text-sm">{data.status}</span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">{JSON.stringify(packageById)}</span>
+                  <span className="text-sm">
+                    {data.status === 'confirmed'
+                      ? data.employees.name
+                      : data.status === 'collected'
+                      ? employees.find(
+                          (x) => x.id === data?.packages?.employee_id ?? '',
+                        )?.name ?? ''
+                      : ''}
+                  </span>
                 </TableCell>
               </TableRow>
             ))}
