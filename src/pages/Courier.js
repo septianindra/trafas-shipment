@@ -116,7 +116,7 @@ function Courier() {
         <div className="flex justify-between">
           <div>Courier</div>
           <div className="float-right">
-            {user.user_metadata.role === 'staff-logistic' ? (
+            {user.user_metadata.role === 'staff-courier' ? (
               ''
             ) : (
               <Button size="small" tag={Link} to="/app/delivery/new">
@@ -339,7 +339,7 @@ function TableDelivery({ response, packageDeleteStatus, query, user }) {
                         <SearchIcon className="w-5 h-5" aria-hidden="true" />
                       </Button>
                       {user.user_metadata.role === 'staff-marketing' ||
-                      user.user_metadata.role === 'staff-logistic' ? (
+                      user.user_metadata.role === 'staff-courier' ? (
                         ''
                       ) : (
                         <Button
@@ -496,7 +496,7 @@ function TablePickup({ response, packageDeleteStatus, query, user }) {
                         <SearchIcon className="w-5 h-5" aria-hidden="true" />
                       </Button>
                       {user.user_metadata.role === 'staff-marketing' ||
-                      user.user_metadata.role === 'staff-logistic' ? (
+                      user.user_metadata.role === 'staff-courier' ? (
                         ''
                       ) : (
                         <Button

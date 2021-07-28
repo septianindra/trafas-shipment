@@ -44,7 +44,7 @@ const routes = [
   {
     path: '/courier/edit/:link/:id',
     component: EditCourier,
-    roles: ['admin', 'admin-logistic'],
+    roles: ['admin', 'admin-courier'],
   },
   {
     path: '/order/new',
