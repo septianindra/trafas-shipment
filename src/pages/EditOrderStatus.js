@@ -399,18 +399,18 @@ function FormEditProductList({ orderById, id }) {
               init={{
                 height: 500,
                 menubar: false,
-                plugins: [
-                  'advlist autolink lists link image charmap print preview anchor',
-                  'searchreplace visualblocks code fullscreen',
-                  'insertdatetime media table paste code help wordcount',
-                ],
+
+                plugins:
+                  'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+                imagetools_cors_hosts: ['picsum.photos'],
+                menubar: 'file edit view insert format tools table help',
                 toolbar:
-                  'undo redo | formatselect | ' +
-                  'bold italic backcolor | alignleft aligncenter ' +
-                  'alignright alignjustify | bullist numlist outdent indent | ' +
-                  'removeformat | help',
+                  'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+                toolbar_sticky: true,
+                skin: 'oxide-dark',
+
                 content_style:
-                  'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                  'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; resize:vertical ; ',
               }}
             />
           </div>
