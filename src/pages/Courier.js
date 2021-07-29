@@ -226,7 +226,9 @@ function TableDelivery({ response, packageDeleteStatus, query, user }) {
   const [pageTable, setPageTable] = useState(1)
   const [dataTable, setDataTable] = useState([])
   const resultsPerPage = 10
-  const totalResults = response.length
+  const totalResults = response.filter(
+    (data) => data.orders.status === 'collected',
+  ).length
 
   function onPageChangeTable(p) {
     setPageTable(p)
@@ -257,10 +259,9 @@ function TableDelivery({ response, packageDeleteStatus, query, user }) {
       )
     } else {
       setDataTable(
-        response.slice(
-          (pageTable - 1) * resultsPerPage,
-          pageTable * resultsPerPage,
-        ),
+        response
+          .filter((data) => data.orders.status === 'collected')
+          .slice((pageTable - 1) * resultsPerPage, pageTable * resultsPerPage),
       )
     }
   }, [response, query, pageTable])
@@ -356,9 +357,7 @@ function TableDelivery({ response, packageDeleteStatus, query, user }) {
                   </div>
                 </TableCell>
               </TableRow>
-            ) : (
-              ''
-            )
+            ) : null
           })}
         </TableBody>
       </Table>
@@ -383,7 +382,9 @@ function TablePickup({ response, packageDeleteStatus, query, user }) {
   const [pageTable, setPageTable] = useState(1)
   const [dataTable, setDataTable] = useState([])
   const resultsPerPage = 10
-  const totalResults = response.length
+  const totalResults = response.filter(
+    (data) => data.orders.status === 'delivered',
+  ).length
 
   function onPageChangeTable(p) {
     setPageTable(p)
@@ -414,10 +415,9 @@ function TablePickup({ response, packageDeleteStatus, query, user }) {
       )
     } else {
       setDataTable(
-        response.slice(
-          (pageTable - 1) * resultsPerPage,
-          pageTable * resultsPerPage,
-        ),
+        response
+          .filter((data) => data.orders.status === 'delivered')
+          .slice((pageTable - 1) * resultsPerPage, pageTable * resultsPerPage),
       )
     }
   }, [response, query, pageTable])

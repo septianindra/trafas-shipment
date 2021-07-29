@@ -54,7 +54,7 @@ export const fetchPackageById = createAsyncThunk(
     const response = await supabase
       .from('packages')
       .select(`*,orders:order_id(*),employees:employee_id(*)`)
-      .eq('id', id)
+      .eq('order_id', id)
     return response
   },
 )
@@ -156,7 +156,6 @@ const packagesSlice = createSlice({
       state.packageListStatus = 'failed'
       state.packageListError = action.error.message
     },
-
     [fetchPackageByEmployeeId.pending]: (state, action) => {
       state.packageListByEmployeeIdStatus = 'loading'
     },

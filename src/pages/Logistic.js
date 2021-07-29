@@ -212,7 +212,9 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
   const [pageTable, setPageTable] = useState(1)
   const [dataTable, setDataTable] = useState([])
   const resultsPerPage = 10
-  const totalResults = response.length
+  const totalResults = response.filter(
+    (data) => data.orders.status === 'confirmed',
+  ).length
 
   function onPageChangeTable(p) {
     setPageTable(p)
@@ -243,10 +245,9 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
       )
     } else {
       setDataTable(
-        response.slice(
-          (pageTable - 1) * resultsPerPage,
-          pageTable * resultsPerPage,
-        ),
+        response
+          .filter((data) => data.orders.status === 'confirmed')
+          .slice((pageTable - 1) * resultsPerPage, pageTable * resultsPerPage),
       )
     }
   }, [response, query, pageTable])
@@ -260,7 +261,6 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
             <TableCell>Shipment Date</TableCell>
             <TableCell>Note</TableCell>
             <TableCell>Prepared By</TableCell>
-
             <TableCell>TO COLLECT At</TableCell>
             <TableCell>Status</TableCell>
             <TableCell className="text-center">Action</TableCell>
@@ -348,9 +348,7 @@ function TablePackage({ response, packageDeleteStatus, query, user }) {
                   </div>
                 </TableCell>
               </TableRow>
-            ) : (
-              ''
-            )
+            ) : null
           })}
         </TableBody>
       </Table>
@@ -376,7 +374,9 @@ function TableReturn({ response, returnDeleteStatus, query, user }) {
   const [pageTable, setPageTable] = useState(1)
   const [dataTable, setDataTable] = useState([])
   const resultsPerPage = 10
-  const totalResults = response.length
+  const totalResults = response.filter(
+    (data) => data.orders.status === 'returned',
+  ).length
 
   function onPageChangeTable(p) {
     setPageTable(p)
@@ -406,10 +406,9 @@ function TableReturn({ response, returnDeleteStatus, query, user }) {
       )
     } else {
       setDataTable(
-        response.slice(
-          (pageTable - 1) * resultsPerPage,
-          pageTable * resultsPerPage,
-        ),
+        response
+          .filter((data) => data.orders.status === 'returned')
+          .slice((pageTable - 1) * resultsPerPage, pageTable * resultsPerPage),
       )
     }
   }, [response, query, pageTable])

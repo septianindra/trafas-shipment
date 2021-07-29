@@ -8,11 +8,9 @@ import {
 import AccessibleNavigationAnnouncer from './components/AccessibleNavigationAnnouncer'
 import { PrivateRoute } from './routes/PrivateRoute'
 import { AuthProvider } from './contexts/Auth'
-import CreateEmployee from './pages/CreateEmployee'
 
 const Layout = lazy(() => import('./containers/Layout'))
 const Login = lazy(() => import('./pages/Login'))
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 
 function App() {

@@ -24,7 +24,7 @@ import {
 import ReactHtmlParser from 'react-html-parser'
 import { useForm } from 'react-hook-form'
 import { FulfillingBouncingCircleSpinner } from 'react-epic-spinners'
-import { clearPackageListStatus } from '../app/packagesSlice'
+import { clearPackageListStatus, fetchPackageById } from '../app/packagesSlice'
 import { clearDeliveryListStatus } from '../app/deliverysSlice'
 import { clearReturnListStatus } from '../app/returnsSlice'
 import { clearPickupListStatus } from '../app/pickupsSlice'
@@ -310,7 +310,11 @@ function EditOrderStatus() {
           </CardBody>
         </Card>
       )}
-      <FormEditProductList orderById={orderById} id={id} />
+      {orderById.status === 'confirmed' ? (
+        <FormEditProductList orderById={orderById} id={id} />
+      ) : (
+        <DetailOrder orderById={orderById} />
+      )}
     </>
   )
 }
@@ -431,4 +435,59 @@ function FormEditProductList({ orderById, id }) {
   )
 }
 
+function DetailOrder({ orderById }) {
+  return (
+    <div className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
+      <div className="grid gap-6 mt-4 mb-4 md:grid-cols-2 xl:grid-cols-2"></div>
+
+      <div className="grid gap-6 mt-4 mb-4 md:grid-cols-2 xl:grid-cols-2">
+        <Label>
+          <span>SPB Number</span>
+          <div className="my-2 p-2 bg-gray-700 text-gray-300">
+            {orderById.number}
+          </div>
+        </Label>
+        <Label>
+          <span>Customer Name</span>
+          <div className="my-2 p-2 bg-gray-700 text-gray-300">
+            {orderById.customer_name}
+          </div>
+        </Label>
+
+        <Label className="col-span-2">
+          <span>Address</span>
+          <div className="my-2 p-2 bg-gray-700 text-gray-300">
+            {orderById.customer_address}
+          </div>
+        </Label>
+        <Label>
+          <span>Delivery Date</span>
+          <div className="my-2 p-2 bg-gray-700 text-gray-300">
+            {orderById.delivery_date}
+          </div>
+        </Label>
+
+        <Label>
+          <span>Pickup Date</span>
+          <div className="my-2 p-2 bg-gray-700 text-gray-300">
+            {orderById.pickup_date}
+          </div>
+        </Label>
+      </div>
+
+      <Label>
+        <span>Product List</span>
+        <div className="my-2 p-2 bg-gray-700 text-gray-300">
+          {ReactHtmlParser(orderById.product_list)}
+        </div>
+      </Label>
+      <Label>
+        <span>Note</span>
+        <div className="my-2 p-2 bg-gray-700 text-gray-300">
+          {orderById.note}
+        </div>
+      </Label>
+    </div>
+  )
+}
 export default EditOrderStatus

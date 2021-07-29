@@ -38,7 +38,7 @@ export const fetchOrderStatusAuditById = createAsyncThunk(
     const response = await supabase
       .from('order_status_audits')
       .select(
-        `*,orders:order_id(*),employees:employee_id(*),packages:package_id(*)`,
+        `*,orders:order_id(*),employees:employee_id(*),packages:package_id(*),deliverys:delivery_id(*),pickups:pickup_id(*),returns:return_id(*)`,
       )
       .eq('order_id', id)
       .order('changed_on', { ascending: false })

@@ -30,10 +30,10 @@ import ReactHtmlParser, {
   convertNodeToElement,
   htmlparser2,
 } from 'react-html-parser'
-import { fetchPackage } from '../app/packagesSlice'
-import { fetchDelivery } from '../app/deliverysSlice'
+import { fetchPackage, fetchPackageById } from '../app/packagesSlice'
+import { fetchDelivery, fetchDeliveryById } from '../app/deliverysSlice'
 import { fetchPickup, fetchPickupById } from '../app/pickupsSlice'
-import { fetchReturn } from '../app/returnsSlice'
+import { fetchReturn, fetchReturnById } from '../app/returnsSlice'
 import { fetchEmployee } from '../app/employeesSlice'
 
 function TraceTrack() {
@@ -62,6 +62,15 @@ function TraceTrack() {
       dispatch(fetchOrderStatusAuditById(id))
       dispatch(fetchOrderById(id))
       dispatch(fetchEmployee())
+    }
+  }, [orderStatusAuditByIdStatus, dispatch])
+
+  useEffect(() => {
+    if (orderStatusAuditByIdStatus === 'succeeded') {
+      dispatch(fetchPackageById(orderById.id))
+      dispatch(fetchDeliveryById(orderById.id))
+      dispatch(fetchPickupById(orderById.id))
+      dispatch(fetchReturnById(orderById.id))
     }
   }, [orderStatusAuditByIdStatus, dispatch])
 
@@ -142,11 +151,15 @@ function TraceTrack() {
                 <TableCell>
                   <span className="text-sm">
                     {data.status === 'confirmed'
-                      ? data.employees.name
+                      ? orderById?.employees?.name ?? ''
                       : data.status === 'collected'
-                      ? employees.find(
-                          (x) => x.id === data?.packages?.employee_id ?? '',
-                        )?.name ?? ''
+                      ? packageById?.employees?.name ?? ''
+                      : data.status === 'delivered'
+                      ? deliveryById?.employees?.name ?? ''
+                      : data.status === 'returned'
+                      ? pickupById?.employees?.name ?? ''
+                      : data.status === 'done'
+                      ? returnById?.employees?.name ?? ''
                       : ''}
                   </span>
                 </TableCell>
