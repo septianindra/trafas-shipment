@@ -408,7 +408,7 @@ function FormEditProductList({ orderById, id }) {
                   'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
                 toolbar_sticky: true,
                 skin: 'oxide-dark',
-
+                paste_data_images: true,
                 content_style:
                   'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; resize:vertical ; ',
               }}

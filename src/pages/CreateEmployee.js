@@ -116,6 +116,7 @@ function CreateEmployee() {
                 {...register('role', { required: true })}
               >
                 <option value="admin">Administrator</option>
+                <option value="dashboard">Dashboard</option>
                 <option value="admin-logistic">Admin Logistic</option>
                 <option value="admin-courier">Admin Courier</option>
                 <option value="admin-marketing">Admin Marketing</option>
