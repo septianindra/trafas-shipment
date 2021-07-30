@@ -60,7 +60,6 @@ function EditOrder() {
       customer_address: orderById.customer_address,
       delivery_date: orderById.delivery_date,
       pickup_date: orderById.pickup_date,
-
       note: orderById.note,
     })
   }, [orderByIdStatus, dispatch])

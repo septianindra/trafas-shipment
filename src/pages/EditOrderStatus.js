@@ -310,7 +310,7 @@ function EditOrderStatus() {
           </CardBody>
         </Card>
       )}
-      {orderById.status === 'confirmed' ? (
+      {orderById.status === 'confirmed' || orderById.status === 'returned' ? (
         <FormEditProductList orderById={orderById} id={id} />
       ) : (
         <DetailOrder orderById={orderById} />
