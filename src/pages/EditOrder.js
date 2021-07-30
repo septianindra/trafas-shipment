@@ -16,7 +16,6 @@ import {
 } from '../app/ordersSlice'
 import { clearPackageListStatus } from '../app/packagesSlice'
 import { clearDeliveryListStatus } from '../app/deliverysSlice'
-import ReactHtmlParser from 'react-html-parser'
 import { useAuth } from '../contexts/Auth'
 
 function EditOrder() {
@@ -37,6 +36,9 @@ function EditOrder() {
     defaultValues: {
       customer_name: orderById.customer_name,
       customer_address: orderById.customer_update,
+      delivery_date: '',
+      pickup_date: '',
+
       note: orderById.note,
     },
   })
@@ -56,6 +58,9 @@ function EditOrder() {
     reset({
       customer_name: orderById.customer_name,
       customer_address: orderById.customer_address,
+      delivery_date: orderById.delivery_date,
+      pickup_date: orderById.pickup_date,
+
       note: orderById.note,
     })
   }, [orderByIdStatus, dispatch])
@@ -66,6 +71,7 @@ function EditOrder() {
     if (canSave)
       try {
         data.id = id
+        data.product_list = product_list
         const resultAction = await dispatch(updateOrder(data))
         unwrapResult(resultAction)
         if (resultAction.payload[0]) {
@@ -130,22 +136,46 @@ function EditOrder() {
               />
             </Label>
             <Label>
-              <span>Delivery Date</span>
-              <div className="my-2 p-2 bg-gray-700 text-gray-600">
-                {orderById.delivery_date}
-              </div>
+              <span>Shipment Date</span>
+              <Input
+                className="mt-1"
+                type="datetime-local"
+                {...register('delivery_date', { required: true })}
+              />
             </Label>
             <Label>
-              <span>Pick up Date</span>
-              <div className="my-2 p-2 bg-gray-700 text-gray-600">
-                {orderById.pickup_date}
-              </div>
+              <span>Pick Up Date</span>
+              <Input
+                className="mt-1"
+                type="datetime-local"
+                {...register('pickup_date', { required: true })}
+              />
             </Label>
           </div>
           <Label>
             <span>Product List</span>
-            <div className="my-2 p-2 bg-gray-700 text-gray-600">
-              {ReactHtmlParser(orderById.product_list)}
+            <div className="my-2">
+              <Editor
+                apiKey="53pih1o4nmih8lqfxw6b8v8xk1og6bgrjww43pwbdgsf5668"
+                onEditorChange={(data) => setProduct_list(data)}
+                initialValue={orderById.product_list}
+                init={{
+                  height: 500,
+                  menubar: false,
+                  plugins: [
+                    'advlist autolink lists link image charmap print preview anchor',
+                    'searchreplace visualblocks code fullscreen',
+                    'insertdatetime media table paste code help wordcount',
+                  ],
+                  toolbar:
+                    'undo redo | formatselect | ' +
+                    'bold italic backcolor | alignleft aligncenter ' +
+                    'alignright alignjustify | bullist numlist outdent indent | ' +
+                    'removeformat | help',
+                  content_style:
+                    'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                }}
+              />
             </div>
           </Label>
           <Label>
@@ -162,7 +192,7 @@ function EditOrder() {
               </Button>
             </div>
             <div>
-              {clearOrderUpdateStatus === 'loading' ? (
+              {orderUpdateStatus === 'loading' ? (
                 <>
                   <FulfillingBouncingCircleSpinner size="20" />
                 </>

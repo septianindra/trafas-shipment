@@ -116,6 +116,8 @@ export const updateOrder = createAsyncThunk(
       .update({
         customer_name: updatedData.customer_name,
         customer_address: updatedData.customer_address,
+        delivery_date: updatedData.delivery_date,
+        pickup_date: updatedData.pickup_date,
         product_list: updatedData.product_list,
         note: updatedData.note,
       })
