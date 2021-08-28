@@ -31,6 +31,10 @@ import { ReactComponent as MarketingIcon } from './marketing.svg'
 import { ReactComponent as LogisticIcon } from './logistic.svg'
 import { ReactComponent as CourierIcon } from './courier.svg'
 import { ReactComponent as UserIcon } from './user.svg'
+import { ReactComponent as AscendingIcon } from './sort-ascending.svg'
+import { ReactComponent as DescendingIcon } from './sort-descending.svg'
+import { ReactComponent as FilterIcon } from './filter.svg'
+import { ReactComponent as HistoryIcon } from './history.svg'
 
 export {
   ButtonsIcon,
@@ -66,4 +70,8 @@ export {
   LogisticIcon,
   CourierIcon,
   UserIcon,
+  AscendingIcon,
+  DescendingIcon,
+  FilterIcon,
+  HistoryIcon,
 }

@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState, forwardRef, useRef } from 'react'
 import PageTitle from '../components/Typography/PageTitle'
 import { Link } from 'react-router-dom'
 import {
+  Card,
+  CardBody,
+  Label,
   Table,
   TableHeader,
   TableCell,
@@ -26,9 +29,19 @@ import {
   clearOrderByIdStatus,
 } from '../app/ordersSlice'
 import { clearOrderStatusAuditByIdStatus } from '../app/orderStatusAuditsSLice'
+import {
+  useTable,
+  useSortBy,
+  usePagination,
+  useAsyncDebounce,
+  useGlobalFilter,
+} from 'react-table'
 
 function Marketing() {
+  const { user } = useAuth()
+  const temp = user?.user_metadata?.role ?? ''
   const dispatch = useDispatch()
+
   const orderStatusAuditByIdStatus = useSelector(
     (state) => state.orderStatusAudits.orderStatusAuditByIdStatus,
   )
@@ -39,9 +52,6 @@ function Marketing() {
     }
   }, [orderStatusAuditByIdStatus, dispatch])
 
-  const { user } = useAuth()
-  const temp = user?.user_metadata?.role ?? ''
-
   const orderList = useSelector((state) => state.orders.orderList)
   const orderListByEmployeeId = useSelector(
     (state) => state.orders.orderListByEmployeeId,
@@ -51,11 +61,10 @@ function Marketing() {
     (state) => state.orders.orderDeleteStatus,
   )
 
-  const [query, setQuery] = useState('')
-
   useEffect(() => {
-    if (orderListStatus === 'idle') {
+    if (orderListStatus === 'idle' && temp === 'admin') {
       dispatch(fetchOrder())
+    } else {
       dispatch(fetchOrderByEmployeeId(user.id))
     }
   }, [orderListStatus, dispatch])
@@ -106,23 +115,9 @@ function Marketing() {
         </div>
       </PageTitle>
       <hr className="mb-4" />
-      <h1 className="text-white">Order List</h1>
-      <div className="ml-1  flex py-3 justify-start flex-1 lg:mr-32">
-        <div className="relative w-full  max-w-xl focus-within:text-purple-500">
-          <div className="absolute inset-y-0 flex items-center pl-2">
-            <SearchIcon className="w-4 h-4" aria-hidden="true" />
-          </div>
-          <Input
-            className="pl-8 rounded-md text-gray-700"
-            placeholder="Search. . ."
-            aria-label="Search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-        </div>
-      </div>
+      {<TableOrder response={orderList} />}
 
-      {temp === 'admin' || temp === 'admin-marketing' ? (
+      {/* {temp === 'admin' || temp === 'admin-marketing' ? (
         <TableList
           response={orderList}
           orderDeleteStatus={orderDeleteStatus}
@@ -136,7 +131,202 @@ function Marketing() {
           query={query}
           user={user}
         />
-      )}
+      )} */}
+    </>
+  )
+}
+
+function TableOrder({ response }) {
+  const data = useMemo(() => response, [response])
+  const columns = useMemo(
+    () => [
+      { Header: 'Created At', accessor: 'created_at' },
+      { Header: 'Customer', accessor: 'customer_name' },
+      { Header: 'Address', accessor: 'customer_address' },
+    ],
+    [],
+  )
+
+  const {
+    state,
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    page,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    allColumns,
+    preGlobalFilteredRows,
+    setGlobalFilter,
+    state: { pageIndex },
+  } = useTable(
+    {
+      columns,
+      data,
+      initialState: { pageIndex: 0 },
+    },
+    useGlobalFilter,
+    useSortBy,
+    usePagination,
+  )
+
+  function GlobalFilter({
+    preGlobalFilteredRows,
+    globalFilter,
+    setGlobalFilter,
+  }) {
+    const count = preGlobalFilteredRows.length
+    const [value, setValue] = React.useState(globalFilter)
+    const onChange = useAsyncDebounce((value) => {
+      setGlobalFilter(value || undefined)
+    }, 1500)
+
+    return (
+      <Label>
+        <span>Search :</span>
+        <Input
+          className="rounded-md mt-2"
+          value={value || ''}
+          onChange={(e) => {
+            setValue(e.target.value)
+            onChange(e.target.value)
+          }}
+          placeholder={`${count} records...`}
+          style={{
+            fontSize: '1.1rem',
+            border: '0',
+          }}
+        />
+      </Label>
+    )
+  }
+
+  return (
+    <>
+      <div className="grid gap-6 md:grid-cols-1">
+        <Card>
+          <CardBody>
+            <p className="mb-2 font-semibold text-gray-600 dark:text-gray-400">
+              Filter
+            </p>
+            <hr className="mb-2" />
+            <span className="text-gray-400 text-sm ">Select :</span>
+            <div className="flex gap-4 mt-2 text-gray-600 dark:text-gray-400">
+              {allColumns.map((column) => (
+                <div key={column.id}>
+                  <Label check>
+                    <Input type="checkbox" {...column.getToggleHiddenProps()} />
+                    <span className="ml-2">{column.id}</span>
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </CardBody>
+          <div className="mx-4 mb-4">
+            <GlobalFilter
+              preGlobalFilteredRows={preGlobalFilteredRows}
+              globalFilter={state.globalFilter}
+              setGlobalFilter={setGlobalFilter}
+            />
+          </div>
+        </Card>
+      </div>
+
+      <TableContainer className="my-4">
+        <Table className=" w-full" {...getTableProps()}>
+          <TableHeader>
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <TableCell
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                  >
+                    {column.render('Header')}
+                    <span>
+                      {column.isSorted
+                        ? column.isSortedDesc
+                          ? ' 🔽'
+                          : ' 🔼'
+                        : ''}
+                    </span>
+                  </TableCell>
+                ))}
+              </tr>
+            ))}
+          </TableHeader>
+          <TableBody {...getTableBodyProps()}>
+            {page.map((row) => {
+              prepareRow(row)
+              return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <TableCell {...cell.getCellProps()}>
+                        {cell.render('Cell')}
+                      </TableCell>
+                    )
+                  })}
+                </tr>
+              )
+            })}
+          </TableBody>
+        </Table>
+        <TableFooter>
+          <div className="pagination">
+            <Button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+              {'<<'}
+            </Button>
+            <Button onClick={() => previousPage()} disabled={!canPreviousPage}>
+              {'<'}
+            </Button>
+            <Button onClick={() => nextPage()} disabled={!canNextPage}>
+              {'>'}
+            </Button>
+            <Button
+              onClick={() => gotoPage(pageCount - 1)}
+              disabled={!canNextPage}
+            >
+              {'>>'}
+            </Button>
+            <span>
+              Page
+              <strong>
+                {pageIndex + 1} of {pageOptions.length}
+              </strong>
+            </span>
+            <span>
+              | Go to page:
+              <input
+                type="number"
+                defaultValue={pageIndex + 1}
+                onChange={(e) => {
+                  const page = e.target.value ? Number(e.target.value) - 1 : 0
+                  gotoPage(page)
+                }}
+                style={{ width: '100px' }}
+              />
+            </span>
+            {/* <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value))
+              }}
+            >
+              {[10, 20, 30, 40, 50].map((pageSize) => (
+                <option key={pageSize} value={pageSize}>
+                  Show {pageSize}
+                </option>
+              ))}
+            </select> */}
+          </div>
+        </TableFooter>
+      </TableContainer>
     </>
   )
 }

@@ -14,6 +14,7 @@ const CreateOrder = lazy(() => import('../pages/CreateOrder'))
 const EditOrder = lazy(() => import('../pages/EditOrder'))
 const EditOrderStatus = lazy(() => import('../pages/EditOrderStatus'))
 const EditProfile = lazy(() => import('../pages/EditProfile'))
+const Report = lazy(() => import('../pages/Report'))
 
 const routes = [
   {
@@ -106,6 +107,11 @@ const routes = [
   {
     path: '/employee/edit/:id',
     component: EditEmployee,
+    roles: ['admin'],
+  },
+  {
+    path: '/report',
+    component: Report,
     roles: ['admin'],
   },
 ]
